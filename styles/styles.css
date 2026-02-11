@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-source: 'Source Sans 3', sans-serif;
+}
+
+@layer components {
+  * {
+    @apply font-source m-0;
+  }
+
+  .movieHeaderRow {
+    @apply bg-pink-300 text-xl text-left px-8;
+  }
+  .movieRow {
+    @apply bg-blue-100 px-8 py-1 text-lg;
+  }
+}
