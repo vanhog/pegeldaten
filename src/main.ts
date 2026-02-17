@@ -13,8 +13,8 @@ const movieHeader: string[] = [
 ];
 
 type GaugeStationHeaderKeys =
-  | "numberid"
-  | "longname"
+  | "num"
+  | "name"
   | "water"
   | "km"
   | "lat"
@@ -25,8 +25,8 @@ type GaugeStationHeaderKeys =
 type GaugeStationHeaderMap = Record<GaugeStationHeaderKeys, string>;
 
 const gaugeStationHeaderMap: GaugeStationHeaderMap = {
-  numberid: "number",
-  longname: "longname",
+  num: "number",
+  name: "longname",
   water: "water.longname",
   km: "km",
   lat: "latitude",
@@ -34,6 +34,10 @@ const gaugeStationHeaderMap: GaugeStationHeaderMap = {
   uuid: "uuid",
   agency: "agency",
 } as const;
+
+console.log(
+  Object.keys(gaugeStationHeaderMap).map((element) => element.toUpperCase()),
+);
 
 function getNestedValue(obj: Object, path: String) {
   return path.split(".").reduce((acc, key) => acc?.[key], obj);
@@ -49,6 +53,58 @@ function mapObject(source: Object, mapper: Object) {
   return target;
 }
 
+function renderStations(inStations, inHeader): void {
+  // for (const element of inStations) {
+  //   console.log(element.name);
+  // }
+  // console.log(inStations[1].name);
+
+  const sect = document.getElementById("movieList");
+
+  // if there's already a table, remove it
+  const checkTable = document.getElementById("dataTable");
+  if (checkTable) {
+    sect?.removeChild(checkTable);
+  }
+
+  // table
+  const tab = document.createElement("table");
+  tab.classList.add("w-full");
+  tab.id = "dataTable";
+  sect?.appendChild(tab);
+
+  // table header
+  const dataTableHeader: string[] = Object.keys(inHeader).map((element) =>
+    element.toUpperCase(),
+  );
+
+  const tableHeaderRow = document.createElement("tr");
+  for (const thisCol of dataTableHeader) {
+    const tableHeaderCell = document.createElement("th");
+    tableHeaderCell.innerText = String(thisCol);
+    tableHeaderCell.classList.add("tableHeaderRowElement");
+    tableHeaderCell.setAttribute("id", `${thisCol}`);
+    tableHeaderCell.addEventListener("click", () => {
+      sortTable(inStations, `${thisCol}`);
+    });
+    tableHeaderCell.classList.add("movieHeaderRow");
+    tableHeaderRow.appendChild(tableHeaderCell);
+  }
+  tab.appendChild(tableHeaderRow);
+
+  for (const station of inStations) {
+    const row = document.createElement("tr");
+    // cell
+    for (const fact in station) {
+      const thisTd = document.createElement("td");
+      thisTd.innerText = String(station[fact]);
+      thisTd.classList.add("movieRow");
+      row.appendChild(thisTd);
+    }
+    tab?.appendChild(row);
+  }
+}
+
 // first of all: get the stations
 
 fetch(gaugeStationsURL)
@@ -61,12 +117,13 @@ fetch(gaugeStationsURL)
     const thisRow = data[9];
     console.log(mapObject(thisRow, gaugeStationHeaderMap));
     const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
-    console.log(mappedStations);
+    //console.log(mappedStations);
+    renderStations(mappedStations, gaugeStationHeaderMap);
   });
 
 const moviesc = movies;
 
-populateList(moviesc);
+//populateList(moviesc);
 
 function populateList(
   inArr: [string, string, string, string, string[], string][],
@@ -127,6 +184,40 @@ document.getElementById("rate")?.addEventListener("input", () => {
     movies.sort((a, b) => Number(b[5]) - Number(a[5]));
   populateList(viewList);
 });
+
+function sortTable(inStations, inKey: string): void {
+  console.log(`I would like to sort efter ${inKey}.`);
+  console.log(
+    inStations[0].num,
+    inStations[0]["num"],
+    inStations[0][inKey.toLowerCase()],
+    Number(inStations[0][inKey.toLowerCase()]),
+  );
+
+  let viewList = inStations;
+
+  if (isNaN(Number(inStations[0][inKey.toLowerCase()]))) {
+    viewList = inStations.sort((a, b) =>
+      String(a[inKey.toLowerCase()]).localeCompare(b[inKey.toLowerCase()]),
+    );
+  } else {
+    viewList = inStations.sort((a?, b?) => {
+      const aRank =
+        a[inKey.toLowerCase()] === undefined
+          ? Infinity
+          : a[inKey.toLocaleLowerCase()];
+      const bRank =
+        b[inKey.toLowerCase()] === undefined
+          ? Infinity
+          : b[inKey.toLocaleLowerCase()];
+      return Number(aRank) - Number(bRank);
+    });
+
+    console.log("Sort mode: NUMBER");
+  }
+
+  renderStations(viewList, gaugeStationHeaderMap);
+}
 
 document.getElementById("searchButton")?.addEventListener("click", () => {
   let searchTerm: string = (
