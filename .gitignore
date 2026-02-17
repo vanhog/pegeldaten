@@ -25,6 +25,6 @@ dist-ssr
 
 package-lock.json
 package.json 
-vite.svg 
-counter.ts
-tsconfig.json
+tsconfig.json 
+src/typescript.svg
+vite.svg
