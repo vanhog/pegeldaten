@@ -27,3 +27,4 @@ package-lock.json
 package.json 
 vite.svg 
 counter.ts
+tsconfig.json
