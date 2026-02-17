@@ -1,38 +1,41 @@
-import { movies } from "../assets/movies.ts";
+import { movies } from '../assets/movies.ts';
 
 const gaugeStationsURL: string =
-  "https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json";
+  'https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json';
+
+const gaugeStationsURLts: string =
+  'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json?includeTimeseries=true&includeCurrentMeasurement=true';
 
 const movieHeader: string[] = [
-  "Title",
-  "Year",
-  "Director",
-  "Running Time",
-  "Genre",
-  "Rate",
+  'Title',
+  'Year',
+  'Director',
+  'Running Time',
+  'Genre',
+  'Rate',
 ];
 
 type GaugeStationHeaderKeys =
-  | "num"
-  | "name"
-  | "water"
-  | "km"
-  | "lat"
-  | "lon"
-  | "uuid"
-  | "agency";
+  | 'num'
+  | 'name'
+  | 'water'
+  | 'km'
+  | 'lat'
+  | 'lon'
+  | 'uuid'
+  | 'agency';
 
 type GaugeStationHeaderMap = Record<GaugeStationHeaderKeys, string>;
 
 const gaugeStationHeaderMap: GaugeStationHeaderMap = {
-  num: "number",
-  name: "longname",
-  water: "water.longname",
-  km: "km",
-  lat: "latitude",
-  lon: "longitude",
-  uuid: "uuid",
-  agency: "agency",
+  num: 'number',
+  name: 'longname',
+  water: 'water.longname',
+  km: 'km',
+  lat: 'latitude',
+  lon: 'longitude',
+  uuid: 'uuid',
+  agency: 'agency',
 } as const;
 
 console.log(
@@ -40,7 +43,7 @@ console.log(
 );
 
 function getNestedValue(obj: Object, path: String) {
-  return path.split(".").reduce((acc, key) => acc?.[key], obj);
+  return path.split('.').reduce((acc, key) => acc?.[key], obj);
 }
 
 function mapObject(source: Object, mapper: Object) {
@@ -59,18 +62,20 @@ function renderStations(inStations, inHeader): void {
   // }
   // console.log(inStations[1].name);
 
-  const sect = document.getElementById("movieList");
+  const headerKeys = Object.keys(inHeader);
+
+  const sect = document.getElementById('movieList');
 
   // if there's already a table, remove it
-  const checkTable = document.getElementById("dataTable");
+  const checkTable = document.getElementById('dataTable');
   if (checkTable) {
     sect?.removeChild(checkTable);
   }
 
   // table
-  const tab = document.createElement("table");
-  tab.classList.add("w-full");
-  tab.id = "dataTable";
+  const tab = document.createElement('table');
+  tab.classList.add('w-full');
+  tab.id = 'dataTable';
   sect?.appendChild(tab);
 
   // table header
@@ -78,27 +83,33 @@ function renderStations(inStations, inHeader): void {
     element.toUpperCase(),
   );
 
-  const tableHeaderRow = document.createElement("tr");
+  const tableHeaderRow = document.createElement('tr');
   for (const thisCol of dataTableHeader) {
-    const tableHeaderCell = document.createElement("th");
+    const tableHeaderCell = document.createElement('th');
     tableHeaderCell.innerText = String(thisCol);
-    tableHeaderCell.classList.add("tableHeaderRowElement");
-    tableHeaderCell.setAttribute("id", `${thisCol}`);
-    tableHeaderCell.addEventListener("click", () => {
+    tableHeaderCell.classList.add('tableHeaderRowElement');
+    tableHeaderCell.setAttribute('id', `${thisCol}`);
+    tableHeaderCell.addEventListener('click', () => {
       sortTable(inStations, `${thisCol}`);
     });
-    tableHeaderCell.classList.add("movieHeaderRow");
+    tableHeaderCell.classList.add('movieHeaderRow');
     tableHeaderRow.appendChild(tableHeaderCell);
   }
   tab.appendChild(tableHeaderRow);
 
   for (const station of inStations) {
-    const row = document.createElement("tr");
+    const row = document.createElement('tr');
+    //console.log(station[headerKeys[0]]);
+    console.log(station.length);
     // cell
-    for (const fact in station) {
-      const thisTd = document.createElement("td");
-      thisTd.innerText = String(station[fact]);
-      thisTd.classList.add("movieRow");
+    for (let i = 0; i < headerKeys.length; i++) {
+      const thisTd = document.createElement('td');
+      if (headerKeys[i] === 'uuid') {
+        thisTd.innerHTML = `<a href="https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations/${station[headerKeys[i]]}/W/currentmeasurement.json" >${station[headerKeys[i]]}</a>`;
+      } else {
+        thisTd.innerText = String(station[headerKeys[i]]);
+      }
+      thisTd.classList.add('movieRow');
       row.appendChild(thisTd);
     }
     tab?.appendChild(row);
@@ -107,9 +118,9 @@ function renderStations(inStations, inHeader): void {
 
 // first of all: get the stations
 
-fetch(gaugeStationsURL)
+fetch(gaugeStationsURLts)
   .then((response) => {
-    if (!response.ok) return console.log("Gauge stations could not be loaded!");
+    if (!response.ok) return console.log('Gauge stations could not be loaded!');
 
     return response.json();
   })
@@ -121,75 +132,11 @@ fetch(gaugeStationsURL)
     renderStations(mappedStations, gaugeStationHeaderMap);
   });
 
-const moviesc = movies;
-
-//populateList(moviesc);
-
-function populateList(
-  inArr: [string, string, string, string, string[], string][],
-): void {
-  const sect = document.getElementById("movieList");
-
-  // if there's already a table, remove it
-  const checkTable = document.getElementById("movieTable");
-  if (checkTable) {
-    sect?.removeChild(checkTable);
-  }
-
-  // table
-  const tab = document.createElement("table");
-  tab.classList.add("w-full");
-  tab.id = "movieTable";
-  sect?.appendChild(tab);
-
-  // table header
-  const tableHeaderRow = document.createElement("tr");
-  for (const thisCol of movieHeader) {
-    const tableHeaderCell = document.createElement("th");
-    tableHeaderCell.innerText = String(thisCol);
-    tableHeaderCell.classList.add("movieHeaderRow");
-    tableHeaderRow.appendChild(tableHeaderCell);
-  }
-  tab.appendChild(tableHeaderRow);
-
-  // row
-  for (const film of inArr) {
-    const row = document.createElement("tr");
-    // cell
-    for (const fact of film) {
-      const thisTd = document.createElement("td");
-      thisTd.innerText = String(fact);
-      thisTd.classList.add("movieRow");
-      row.appendChild(thisTd);
-    }
-    tab?.appendChild(row);
-  }
-}
-
-document.getElementById("up")?.addEventListener("input", () => {
-  //console.log('up checked', movies[0][1]);
-  let viewList: [string, string, string, string, string[], string][] =
-    movies.sort((a, b) => Number(a[1]) - Number(b[1]));
-  populateList(viewList);
-});
-
-document.getElementById("down")?.addEventListener("input", () => {
-  let viewList: [string, string, string, string, string[], string][] =
-    movies.sort((a, b) => Number(b[1]) - Number(a[1]));
-  populateList(viewList);
-});
-
-document.getElementById("rate")?.addEventListener("input", () => {
-  let viewList: [string, string, string, string, string[], string][] =
-    movies.sort((a, b) => Number(b[5]) - Number(a[5]));
-  populateList(viewList);
-});
-
 function sortTable(inStations, inKey: string): void {
   console.log(`I would like to sort efter ${inKey}.`);
   console.log(
     inStations[0].num,
-    inStations[0]["num"],
+    inStations[0]['num'],
     inStations[0][inKey.toLowerCase()],
     Number(inStations[0][inKey.toLowerCase()]),
   );
@@ -213,15 +160,15 @@ function sortTable(inStations, inKey: string): void {
       return Number(aRank) - Number(bRank);
     });
 
-    console.log("Sort mode: NUMBER");
+    console.log('Sort mode: NUMBER');
   }
 
   renderStations(viewList, gaugeStationHeaderMap);
 }
 
-document.getElementById("searchButton")?.addEventListener("click", () => {
+document.getElementById('searchButton')?.addEventListener('click', () => {
   let searchTerm: string = (
-    document.getElementById("searchTerm") as HTMLInputElement
+    document.getElementById('searchTerm') as HTMLInputElement
   ).value;
   const results = movies.filter((movie) =>
     movie
