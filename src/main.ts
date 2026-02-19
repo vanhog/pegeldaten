@@ -1,4 +1,4 @@
-import { movies } from '../assets/movies.ts';
+import { getNestedValue, mapObject } from './helper.ts';
 
 const gaugeStationsURL: string =
   'https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json';
@@ -47,12 +47,22 @@ const factsToRender: GaugeStationHeaderMap = {
   lon: 'longitude',
 };
 
+let currentStation: string = '';
+
+// this is a raw function
 function fetchStation(inUUID: string): Object {
   const fetchURL =
     'http://pegelonline.wsv.de/webservices/rest-api/v2/stations/' +
     inUUID +
     '.json?includeTimeseries=true&includeCurrentMeasurement=true';
-  console.log(fetchURL);
+  //console.log(fetchURL);
+  if (currentStation) {
+    document
+      .getElementById(currentStation)
+      ?.classList.remove('stationRowSelected');
+  }
+  document.getElementById(inUUID)?.classList.add('stationRowSelected');
+  currentStation = inUUID;
   fetch(fetchURL)
     .then((response) => {
       if (!response.ok)
@@ -85,23 +95,6 @@ function fetchStation(inUUID: string): Object {
       }
       console.log(data);
     });
-}
-console.log(
-  Object.keys(gaugeStationHeaderMap).map((element) => element.toUpperCase()),
-);
-
-function getNestedValue(obj: Object, path: String) {
-  return path.split('.').reduce((acc, key) => acc?.[key], obj);
-}
-
-function mapObject(source: Object, mapper: Object) {
-  const target = {};
-
-  Object.entries(mapper).forEach(([targetKey, sourcePath]) => {
-    target[targetKey] = getNestedValue(source, sourcePath);
-  });
-
-  return target;
 }
 
 function renderStations(inStations, inHeader): void {
@@ -150,9 +143,7 @@ function renderStations(inStations, inHeader): void {
     });
 
     // cell
-    console.log(Object.keys(inHeader));
     for (const fact in station) {
-      console.log(fact, Object.keys(inHeader).includes(fact));
       if (Object.keys(inHeader).includes(fact)) {
         const thisTd = document.createElement('td');
 
@@ -173,10 +164,8 @@ fetch(gaugeStationsURLts)
     return response.json();
   })
   .then((data) => {
-    const thisRow = data[9];
-    console.log(mapObject(thisRow, gaugeStationHeaderMap));
     const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
-    console.log(gaugeStationHeaderMap);
+    currentStation = mappedStations[0].uuid;
     renderStations(mappedStations, factsToRender);
   });
 
