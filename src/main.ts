@@ -38,6 +38,15 @@ const gaugeStationHeaderMap: GaugeStationHeaderMap = {
   agency: 'agency',
 } as const;
 
+const factsToRender: GaugeStationHeaderMap = {
+  num: 'number',
+  name: 'longname',
+  water: 'water-longname',
+  km: 'km',
+  lat: 'latitude',
+  lon: 'longitude',
+};
+
 function fetchStation(inUUID: string): Object {
   const fetchURL =
     'http://pegelonline.wsv.de/webservices/rest-api/v2/stations/' +
@@ -96,13 +105,6 @@ function mapObject(source: Object, mapper: Object) {
 }
 
 function renderStations(inStations, inHeader): void {
-  // for (const element of inStations) {
-  //   console.log(element.name);
-  // }
-  // console.log(inStations[1].name);
-
-  const headerKeys = Object.keys(inHeader);
-
   const sect = document.getElementById('movieList');
 
   // if there's already a table, remove it
@@ -113,7 +115,9 @@ function renderStations(inStations, inHeader): void {
 
   // table
   const tab = document.createElement('table');
-  tab.classList.add('w-full');
+  tab.classList.add('max-w-7xl');
+  tab.classList.add('overflow-hidden');
+  tab.classList.add('bg-hiid-table-bg');
   tab.id = 'dataTable';
   sect?.appendChild(tab);
 
@@ -146,12 +150,16 @@ function renderStations(inStations, inHeader): void {
     });
 
     // cell
+    console.log(Object.keys(inHeader));
     for (const fact in station) {
-      const thisTd = document.createElement('td');
+      console.log(fact, Object.keys(inHeader).includes(fact));
+      if (Object.keys(inHeader).includes(fact)) {
+        const thisTd = document.createElement('td');
 
-      thisTd.innerText = String(station[fact]);
-      thisTd.classList.add('movieRowElement');
-      row.appendChild(thisTd);
+        thisTd.innerText = String(station[fact]);
+        thisTd.classList.add('movieRowElement');
+        row.appendChild(thisTd);
+      }
     }
     tab?.appendChild(row);
   }
@@ -168,7 +176,8 @@ fetch(gaugeStationsURLts)
     const thisRow = data[9];
     console.log(mapObject(thisRow, gaugeStationHeaderMap));
     const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
-    renderStations(mappedStations, gaugeStationHeaderMap);
+    console.log(gaugeStationHeaderMap);
+    renderStations(mappedStations, factsToRender);
   });
 
 function sortTable(inStations, inKey: string): void {
@@ -202,7 +211,7 @@ function sortTable(inStations, inKey: string): void {
     console.log('Sort mode: NUMBER');
   }
 
-  renderStations(viewList, gaugeStationHeaderMap);
+  renderStations(viewList, factsToRender);
 }
 
 document.getElementById('searchButton')?.addEventListener('click', () => {
