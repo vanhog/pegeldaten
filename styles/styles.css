@@ -7,6 +7,7 @@
   --color-hiid-bg: oklch(0.17 0.03 255);
   --color-hiid-table-bg: oklch(0.2 0.03 255);
   --color-hiid-table-header-bg: oklch(0.18 0.03 255);
+  --color-hiid-table-header-bg-glow: oklch(0.78 0.12 215 / 0.15);
   --color-hiid-table-row-bg: oklch(0.21 0.03 255);
   --color-hiid-table-row-zebra: oklch(0.43 0.02 255);
   --color-hiid-table-row-hover: oklch(0.8221 0.148 87.35 / 0.05);
@@ -28,11 +29,11 @@
   }
 
   .movieHeaderRow {
-    @apply bg-hiid-table-header-bg text-hiid-text-primary tracking-widest text-xl text-left px-8 sticky top-0;
+    @apply bg-hiid-table-header-bg-glow text-hiid-text-primary tracking-widest text-xl text-left px-8 sticky top-0;
   }
 
   .tableHeaderRowElement {
-    @apply font-bold hover:cursor-pointer hover:bg-hiid-table-row-hover hover:text-hiid-text-glow;
+    @apply font-bold hover:cursor-pointer hover:text-hiid-text-glow;
   }
   .movieRow {
     @apply bg-hiid-table-row-bg text-hiid-text-muted hover:bg-hiid-table-row-hover hover:text-hiid-text-accent px-1 py-1 text-base;
