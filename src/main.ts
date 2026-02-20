@@ -71,29 +71,37 @@ function fetchStation(inUUID: string): Object {
       return response.json();
     })
     .then((data) => {
-      let targetCanvas: HTMLElement | null =
-        document.getElementById('mapControl');
-      if (targetCanvas) {
-        targetCanvas.innerHTML = '';
-      }
-
-      for (let k of Object.keys(data)) {
-        console.log(k);
-        console.log((document.createElement('p').innerText = `${k}: data[k]`));
-        const el_p = document.createElement('p');
-        el_p.innerText = `${k}: ${data[k]}`;
-
-        targetCanvas?.appendChild(el_p);
-      }
-      if (data['timeseries']) {
-        const ts = data['timeseries'];
-        const tsp = ts.filter((a) => (a.shortname = 'W'));
-        console.log('tsp', tsp[0].currentMeasurement.value);
-        const el_pp = document.createElement('p');
-        el_pp.innerText = tsp;
-        targetCanvas?.appendChild(el_pp);
-      }
-      console.log(data);
+      document.getElementById('station-title-admin-shortname').innerText =
+        data['shortname'];
+      document.getElementById('station-title-admin-longname').innerText =
+        data['longname'];
+      document.getElementById('station-title-admin-water').innerText =
+        data['water'].shortname;
+      document.getElementById('station-title-admin-number').innerText =
+        data['number'];
+      document.getElementById('station-title-admin-agency').innerText =
+        data['agency'];
+      // let targetCanvas: HTMLElement | null =
+      //   document.getElementById('mapControl');
+      // if (targetCanvas) {
+      //   targetCanvas.innerHTML = '';
+      // }
+      // for (let k of Object.keys(data)) {
+      //   console.log(k);
+      //   console.log((document.createElement('p').innerText = `${k}: data[k]`));
+      //   const el_p = document.createElement('p');
+      //   el_p.innerText = `${k}: ${data[k]}`;
+      //   targetCanvas?.appendChild(el_p);
+      // }
+      // if (data['timeseries']) {
+      //   const ts = data['timeseries'];
+      //   const tsp = ts.filter((a) => (a.shortname = 'W'));
+      //   console.log('tsp', tsp[0].currentMeasurement.value);
+      //   const el_pp = document.createElement('p');
+      //   el_pp.innerText = tsp;
+      //   targetCanvas?.appendChild(el_pp);
+      // }
+      // console.log(data);
     });
 }
 
