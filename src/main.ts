@@ -108,9 +108,10 @@ function renderStations(inStations, inHeader): void {
 
   // table
   const tab = document.createElement('table');
-  tab.classList.add('max-w-7xl');
+  tab.classList.add('max-w-5xl');
   tab.classList.add('overflow-hidden');
   tab.classList.add('bg-hiid-table-bg');
+  tab.classList.add('rounded-s-2xl');
   tab.id = 'dataTable';
   sect?.appendChild(tab);
 
@@ -128,7 +129,7 @@ function renderStations(inStations, inHeader): void {
     tableHeaderCell.addEventListener('click', () => {
       sortTable(inStations, `${thisCol}`);
     });
-    tableHeaderCell.classList.add('movieHeaderRow');
+    tableHeaderRow.classList.add('tableHeaderRow');
     tableHeaderRow.appendChild(tableHeaderCell);
   }
   tab.appendChild(tableHeaderRow);
@@ -167,6 +168,7 @@ fetch(gaugeStationsURLts)
     const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
     currentStation = mappedStations[0].uuid;
     renderStations(mappedStations, factsToRender);
+    console.log(Object.keys(mappedStations).length);
   });
 
 function sortTable(inStations, inKey: string): void {

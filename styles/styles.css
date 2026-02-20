@@ -5,13 +5,13 @@
   --font-source: 'Source Sans 3', sans-serif;
 
   --color-hiid-bg: oklch(0.17 0.03 255);
-  --color-hiid-table-bg: oklch(0.2 0.03 255);
+  --color-hiid-table-bg: oklch(0.2582 0.03 255); /*oklch(0.2 0.03 255);*/
   --color-hiid-table-header-bg: oklch(0.18 0.03 255);
   --color-hiid-table-header-bg-glow: oklch(0.78 0.12 215 / 0.15);
   --color-hiid-table-row-bg: oklch(0.21 0.03 255);
   --color-hiid-table-row-zebra: oklch(0.43 0.02 255);
   --color-hiid-table-row-hover: oklch(0.8221 0.148 87.35 / 0.05);
-  --color-hiid-table-row-selected: oklch(0.35 0.08 225 / 0.25);
+  --color-hiid-table-row-selected: oklch(0.855 0.138 181.071 / 0.3);
 
   --color-hiid-text-primary: oklch(0.92 0.01 255);
   --color-hiid-text-muted: oklch(0.7 0.02 255);
@@ -28,22 +28,34 @@
     @apply bg-hiid-bg w-full;
   }
 
-  .movieHeaderRow {
-    @apply bg-hiid-table-header-bg-glow text-hiid-text-primary tracking-widest text-xl text-left px-8 sticky top-0;
+  .hiid-header {
+    @apply bg-hiid-table-bg rounded-2xl px-8 py-3;
+  }
+
+  .hiid-list-control {
+    @apply bg-hiid-table-bg rounded-2xl px-8 py-3;
+  }
+
+  .tableHeaderRow {
+    @apply bg-hiid-table-header-bg-glow text-hiid-text-primary;
   }
 
   .tableHeaderRowElement {
-    @apply font-bold hover:cursor-pointer hover:text-hiid-text-glow;
+    @apply font-bold hover:cursor-pointer hover:text-hiid-text-glow text-left px-8 tracking-widest;
   }
   .movieRow {
     @apply bg-hiid-table-row-bg text-hiid-text-muted hover:bg-hiid-table-row-hover hover:text-hiid-text-accent px-1 py-1 text-base;
   }
 
   .stationRowSelected {
-    @apply bg-red-600 hover:bg-red-600;
+    @apply bg-hiid-table-row-selected hover:bg-hiid-table-row-selected text-hiid-text-accent;
   }
 
   .movieRowElement {
     @apply px-8 py-1 text-base;
+  }
+
+  .hiid-drawer {
+    @apply min-w-100 min-h-60 bg-hiid-table-bg text-hiid-text-muted  rounded-2xl px-6 py-4;
   }
 }
