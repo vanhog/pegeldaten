@@ -71,6 +71,8 @@ function fetchStation(inUUID: string): Object {
       return response.json();
     })
     .then((data) => {
+      let ts: string[] = [];
+
       document.getElementById('station-title-admin-shortname').innerText =
         data['shortname'];
       document.getElementById('station-title-admin-longname').innerText =
@@ -81,6 +83,29 @@ function fetchStation(inUUID: string): Object {
         data['number'];
       document.getElementById('station-title-admin-agency').innerText =
         data['agency'];
+
+      console.log(data);
+      if (data['timeseries']) {
+        let searchTerm: string = 'WASSERSTAND';
+        console.log(
+          `We do have ${Object.keys(data['timeseries']).length} timeseries`,
+        );
+        for (let elem of data['timeseries']) {
+          ts.push(elem.longname);
+        }
+        const waterTS = data['timeseries'].filter((a) =>
+          a.longname.toUpperCase().includes(searchTerm),
+        );
+        console.log('TS filtered: ', waterTS[0].unit);
+        let uni: string = waterTS[0].unit;
+        console.log(uni, ts);
+        document.getElementById('current-measurement-title').innerText =
+          searchTerm;
+        document.getElementById('current-measurement-value').innerText =
+          waterTS[0].currentMeasurement.value;
+        document.getElementById('current-measurement-unit').innerText =
+          waterTS[0].unit;
+      }
       // let targetCanvas: HTMLElement | null =
       //   document.getElementById('mapControl');
       // if (targetCanvas) {
