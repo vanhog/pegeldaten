@@ -58,4 +58,8 @@
   .hiid-drawer {
     @apply min-w-100 min-h-60 bg-hiid-table-bg text-hiid-text-muted  rounded-2xl px-6 py-4;
   }
+
+  .current-measurement-time {
+    @apply text-center text-white;
+  }
 }

@@ -1,4 +1,5 @@
 import { getNestedValue, mapObject } from './helper.ts';
+import { Temporal } from '@js-temporal/polyfill';
 
 //settings
 const restStations: string =
@@ -6,9 +7,14 @@ const restStations: string =
 const aisleTSM: string =
   '.json?includeTimeseries=true&includeCurrentMeasurement=true';
 
+const searchTermWasserstand: string = 'WASSERSTAND';
+const timeZoneClassifier: string = 'Europe/Copenhagen';
+const timeLocaleClassifier: string = 'de-DE';
+
 //state
 let currentStation: string = '';
 
+//consts and variables
 const gaugeStationsURL: string =
   'https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json';
 
@@ -56,6 +62,19 @@ const factsToRender: GaugeStationHeaderMap = {
   lon: 'longitude',
 };
 
+function formatDateThenTime(
+  zdt: Temporal.ZonedDateTime,
+  locale = timeLocaleClassifier,
+): string {
+  const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
+  const timeFmt = new Intl.DateTimeFormat(locale, { timeStyle: 'short' });
+
+  // Intl.DateTimeFormat works with epoch milliseconds
+  const ms = zdt.epochMilliseconds;
+
+  return `${timeFmt.format(ms)} - ${dateFmt.format(ms)}`;
+}
+
 function renderDrawer01(data: unknown) {
   document.getElementById('station-title-admin-shortname').innerText =
     data['shortname'];
@@ -71,28 +90,39 @@ function renderDrawer01(data: unknown) {
 
 function renderDrawer02(data: unknown) {
   let ts: string[] = [];
+  let tStamp: Temporal.Instant;
+
   console.log(data);
+  //remove obsolete values and units
   document.getElementById('current-measurement-value').innerText = '---';
   document.getElementById('current-measurement-unit').innerText = '';
+  document.getElementById('cmv-timestamp').innerText = 'Time/Date';
+
   if (data['timeseries']) {
-    let searchTerm: string = 'WASSERSTAND';
-    // console.log(
-    //   `We do have ${Object.keys(data['timeseries']).length} timeseries`,
-    // );
+    let searchTerm: string = searchTermWasserstand;
+
     for (let elem of data['timeseries']) {
       ts.push(elem.longname);
     }
     const waterTS = data['timeseries'].filter((a) =>
       a.longname.toUpperCase().includes(searchTerm),
     );
-    console.log('TS filtered: ', waterTS[0].unit);
-    let uni: string = waterTS[0].unit;
-    console.log(uni, ts);
-    document.getElementById('current-measurement-title').innerText = searchTerm;
-    document.getElementById('current-measurement-value').innerText =
-      waterTS[0].currentMeasurement.value;
-    document.getElementById('current-measurement-unit').innerText =
-      waterTS[0].unit;
+
+    if (waterTS.length > 0) {
+      // store as UTC for later use
+      tStamp = Temporal.Instant.from(waterTS[0].currentMeasurement.timestamp);
+
+      document.getElementById('current-measurement-title').innerText =
+        searchTerm;
+      document.getElementById('current-measurement-value').innerText =
+        waterTS[0].currentMeasurement.value;
+      document.getElementById('current-measurement-unit').innerText =
+        waterTS[0].unit;
+
+      document.getElementById('cmv-timestamp').innerText = formatDateThenTime(
+        tStamp.toZonedDateTimeISO(timeZoneClassifier),
+      );
+    }
   }
 }
 
@@ -194,6 +224,10 @@ fetch(gaugeStationsURLts)
     currentStation = mappedStations[0].uuid;
     renderStations(mappedStations, factsToRender);
     console.log(Object.keys(mappedStations).length);
+
+    for (const i of mappedStations) {
+      console.log(i);
+    }
   });
 
 function sortTable(inStations, inKey: string): void {
