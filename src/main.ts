@@ -238,6 +238,7 @@ function sortTable(inStations, inKey: string): void {
   renderStations(viewList, factsToRender);
 }
 
+// keyword search
 document.getElementById('searchButton')?.addEventListener('click', () => {
   let searchTerm: string = (
     document.getElementById('searchTerm') as HTMLInputElement
