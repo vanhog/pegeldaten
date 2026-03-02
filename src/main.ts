@@ -7,28 +7,30 @@ const restStations: string =
 const aisleTSM: string =
   '.json?includeTimeseries=true&includeCurrentMeasurement=true';
 
-const searchTermWasserstand: string = 'WASSERSTAND';
-const timeZoneClassifier: string = 'Europe/Copenhagen';
-const timeLocaleClassifier: string = 'de-DE';
-
-//state
-let currentStation: string = '';
-
-//consts and variables
 const gaugeStationsURL: string =
   'https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json';
 
 const gaugeStationsURLts: string =
   'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json?includeTimeseries=true&includeCurrentMeasurement=true';
 
-const movieHeader: string[] = [
-  'Title',
-  'Year',
-  'Director',
-  'Running Time',
-  'Genre',
-  'Rate',
-];
+const searchTermWasserstand: string = 'WASSERSTAND';
+const timeZoneClassifier: string = 'Europe/Copenhagen';
+const timeLocaleClassifier: string = 'de-DE';
+
+const factsToRender: GaugeStationHeaderMap = {
+  num: 'number',
+  name: 'longname',
+  water: 'water-longname',
+  km: 'km',
+  lat: 'latitude',
+  lon: 'longitude',
+};
+
+//state
+let currentStation: string = '';
+let currentStations: GaugeStationHeaderMap;
+
+//consts and variables
 
 type GaugeStationHeaderKeys =
   | 'num'
@@ -52,15 +54,6 @@ const gaugeStationHeaderMap: GaugeStationHeaderMap = {
   uuid: 'uuid',
   agency: 'agency',
 } as const;
-
-const factsToRender: GaugeStationHeaderMap = {
-  num: 'number',
-  name: 'longname',
-  water: 'water-longname',
-  km: 'km',
-  lat: 'latitude',
-  lon: 'longitude',
-};
 
 function formatDateThenTime(
   zdt: Temporal.ZonedDateTime,
@@ -212,24 +205,6 @@ function renderStations(inStations, inHeader): void {
   }
 }
 
-// first of all: get the stations
-fetch(gaugeStationsURLts)
-  .then((response) => {
-    if (!response.ok) return console.log('Gauge stations could not be loaded!');
-
-    return response.json();
-  })
-  .then((data) => {
-    const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
-    currentStation = mappedStations[0].uuid;
-    renderStations(mappedStations, factsToRender);
-    console.log(Object.keys(mappedStations).length);
-
-    for (const i of mappedStations) {
-      console.log(i);
-    }
-  });
-
 function sortTable(inStations, inKey: string): void {
   console.log(`I would like to sort efter ${inKey}.`);
   console.log(
@@ -264,19 +239,54 @@ function sortTable(inStations, inKey: string): void {
   renderStations(viewList, factsToRender);
 }
 
-// keyword search
-document.getElementById('searchButton')?.addEventListener('click', () => {
+// first of all: get the stations
+fetch(gaugeStationsURLts)
+  .then((response) => {
+    if (!response.ok) return console.log('Gauge stations could not be loaded!');
+
+    return response.json();
+  })
+  .then((data) => {
+    const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
+    currentStation = mappedStations[0].uuid;
+    renderStations(mappedStations, factsToRender);
+
+    ///this is where I am
+    const sorted = [...mappedStations].sort((a, b) =>
+      (a.num ?? '').localeCompare(b.num ?? ''),
+    );
+    console.log(sorted);
+    document
+      .getElementById('searchButton')
+      ?.addEventListener('click', () =>
+        keywordSearch(mappedStations, factsToRender),
+      );
+  });
+
+function keywordSearch(inStations, factsToRender): void {
   let searchTerm: string = (
     document.getElementById('searchTerm') as HTMLInputElement
   ).value;
-  const results = movies.filter((movie) =>
-    movie
-      .slice(0, 4)
-      .some((field) =>
-        String(field)
-          .toLocaleLowerCase()
-          .includes(searchTerm.toLocaleLowerCase()),
-      ),
-  );
-  populateList(results);
-});
+  console.log(searchTerm);
+  console.log(factsToRender);
+  console.log(inStations);
+
+  renderStations(inStations, factsToRender);
+}
+
+// keyword search
+// document.getElementById('searchButton')?.addEventListener('click', () => {
+//   let searchTerm: string = (
+//     document.getElementById('searchTerm') as HTMLInputElement
+//   ).value;
+//   const results = movies.filter((movie) =>
+//     movie
+//       .slice(0, 4)
+//       .some((field) =>
+//         String(field)
+//           .toLocaleLowerCase()
+//           .includes(searchTerm.toLocaleLowerCase()),
+//       ),
+//   );
+//   renderStations(viewList, factsToRender);
+//});
