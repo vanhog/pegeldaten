@@ -1,5 +1,14 @@
 import { getNestedValue, mapObject } from './helper.ts';
 
+//settings
+const restStations: string =
+  'http://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
+const aisleTSM: string =
+  '.json?includeTimeseries=true&includeCurrentMeasurement=true';
+
+//state
+let currentStation: string = '';
+
 const gaugeStationsURL: string =
   'https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json';
 
@@ -47,20 +56,57 @@ const factsToRender: GaugeStationHeaderMap = {
   lon: 'longitude',
 };
 
-let currentStation: string = '';
+function renderDrawer01(data: unknown) {
+  document.getElementById('station-title-admin-shortname').innerText =
+    data['shortname'];
+  document.getElementById('station-title-admin-longname').innerText =
+    data['longname'];
+  document.getElementById('station-title-admin-water').innerText =
+    data['water'].shortname;
+  document.getElementById('station-title-admin-number').innerText =
+    data['number'];
+  document.getElementById('station-title-admin-agency').innerText =
+    data['agency'];
+}
 
-// this is a raw function
+function renderDrawer02(data: unknown) {
+  let ts: string[] = [];
+  console.log(data);
+  document.getElementById('current-measurement-value').innerText = '---';
+  document.getElementById('current-measurement-unit').innerText = '';
+  if (data['timeseries']) {
+    let searchTerm: string = 'WASSERSTAND';
+    // console.log(
+    //   `We do have ${Object.keys(data['timeseries']).length} timeseries`,
+    // );
+    for (let elem of data['timeseries']) {
+      ts.push(elem.longname);
+    }
+    const waterTS = data['timeseries'].filter((a) =>
+      a.longname.toUpperCase().includes(searchTerm),
+    );
+    console.log('TS filtered: ', waterTS[0].unit);
+    let uni: string = waterTS[0].unit;
+    console.log(uni, ts);
+    document.getElementById('current-measurement-title').innerText = searchTerm;
+    document.getElementById('current-measurement-value').innerText =
+      waterTS[0].currentMeasurement.value;
+    document.getElementById('current-measurement-unit').innerText =
+      waterTS[0].unit;
+  }
+}
+
+//
 function fetchStation(inUUID: string): Object {
-  const fetchURL =
-    'http://pegelonline.wsv.de/webservices/rest-api/v2/stations/' +
-    inUUID +
-    '.json?includeTimeseries=true&includeCurrentMeasurement=true';
-  //console.log(fetchURL);
+  const fetchURL = restStations + inUUID + aisleTSM;
+
+  // if there's station selected, remove selection style
   if (currentStation) {
     document
       .getElementById(currentStation)
       ?.classList.remove('stationRowSelected');
   }
+
   document.getElementById(inUUID)?.classList.add('stationRowSelected');
   currentStation = inUUID;
   fetch(fetchURL)
@@ -71,62 +117,8 @@ function fetchStation(inUUID: string): Object {
       return response.json();
     })
     .then((data) => {
-      let ts: string[] = [];
-
-      document.getElementById('station-title-admin-shortname').innerText =
-        data['shortname'];
-      document.getElementById('station-title-admin-longname').innerText =
-        data['longname'];
-      document.getElementById('station-title-admin-water').innerText =
-        data['water'].shortname;
-      document.getElementById('station-title-admin-number').innerText =
-        data['number'];
-      document.getElementById('station-title-admin-agency').innerText =
-        data['agency'];
-
-      console.log(data);
-      if (data['timeseries']) {
-        let searchTerm: string = 'WASSERSTAND';
-        console.log(
-          `We do have ${Object.keys(data['timeseries']).length} timeseries`,
-        );
-        for (let elem of data['timeseries']) {
-          ts.push(elem.longname);
-        }
-        const waterTS = data['timeseries'].filter((a) =>
-          a.longname.toUpperCase().includes(searchTerm),
-        );
-        console.log('TS filtered: ', waterTS[0].unit);
-        let uni: string = waterTS[0].unit;
-        console.log(uni, ts);
-        document.getElementById('current-measurement-title').innerText =
-          searchTerm;
-        document.getElementById('current-measurement-value').innerText =
-          waterTS[0].currentMeasurement.value;
-        document.getElementById('current-measurement-unit').innerText =
-          waterTS[0].unit;
-      }
-      // let targetCanvas: HTMLElement | null =
-      //   document.getElementById('mapControl');
-      // if (targetCanvas) {
-      //   targetCanvas.innerHTML = '';
-      // }
-      // for (let k of Object.keys(data)) {
-      //   console.log(k);
-      //   console.log((document.createElement('p').innerText = `${k}: data[k]`));
-      //   const el_p = document.createElement('p');
-      //   el_p.innerText = `${k}: ${data[k]}`;
-      //   targetCanvas?.appendChild(el_p);
-      // }
-      // if (data['timeseries']) {
-      //   const ts = data['timeseries'];
-      //   const tsp = ts.filter((a) => (a.shortname = 'W'));
-      //   console.log('tsp', tsp[0].currentMeasurement.value);
-      //   const el_pp = document.createElement('p');
-      //   el_pp.innerText = tsp;
-      //   targetCanvas?.appendChild(el_pp);
-      // }
-      // console.log(data);
+      renderDrawer01(data);
+      renderDrawer02(data);
     });
 }
 
