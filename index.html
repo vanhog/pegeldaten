@@ -45,38 +45,6 @@
                     Search
                   </button>
                 </div>
-                <!--
-                <div id="radios" class="flex flex-row py-6">
-                  <label for="up">
-                    <input
-                      type="radio"
-                      name="searchGroup"
-                      id="up"
-                      class="ms-4 me-1"
-                    />
-                    <span class="text-lg">YEAR UP</span></label
-                  >
-                  <label for="down">
-                    <input
-                      type="radio"
-                      name="searchGroup"
-                      id="down"
-                      class="ms-4 me-1"
-                    />
-                    <span class="text-lg">YEAR DOWN</span></label
-                  >
-
-                  <label for="rate">
-                    <input
-                      type="radio"
-                      name="searchGroup"
-                      id="rate"
-                      class="ms-4 me-1"
-                    />
-                    <span class="text-lg">BEST RATED</span></label
-                  >
-                </div>
-                -->
               </fieldset>
             </section>
             <section
@@ -85,7 +53,8 @@
             ></section>
           </div>
           <div id="right-hand-side" class="flex flex-col gap-2">
-            <section id="mapControl" class="hiid-drawer">
+            <!-- FIRST DRAWER-->
+            <section id="metaControl" class="hiid-drawer">
               <div
                 id="station-title-admin-shortname"
                 class="text-2xl text-white font-bold"
@@ -94,20 +63,49 @@
               </div>
               <div
                 id="station-title-name"
-                class="flex flex-row justify-between items-baseline"
+                class="flex flex-row justify-between items-baseline mb-4"
               >
-                <span id="station-title-admin-longname">number</span
-                ><span id="station-title-admin-water">agency</span>
+                <div class="flex flex-col justify-center items-start">
+                  <span id="station-title-admin-longname"></span>
+                  <span
+                    id="station-title-admin-longnaming"
+                    class="hiid-meta-naming"
+                    >Longname</span
+                  >
+                </div>
+                <div class="flex flex-col justify-end items-end">
+                  <span id="station-title-admin-water"></span>
+                  <span
+                    id="station-title-admin-waternaming"
+                    class="hiid-meta-naming"
+                    >Water</span
+                  >
+                </div>
               </div>
 
               <div
                 id="station-title-admin-meta"
                 class="flex flex-row justify-between gap-3"
               >
-                <span id="station-title-admin-number">number</span
-                ><span id="station-title-admin-agency">agency</span>
+                <div class="flex flex-col justify-center items-start">
+                  <span id="station-title-admin-number"></span>
+                  <span
+                    id="station-title-admin-longnaming"
+                    class="hiid-meta-naming"
+                    >Number</span
+                  >
+                </div>
+                <div class="flex flex-col justify-end items-end">
+                  <span id="station-title-admin-agency"></span>
+                  <span
+                    id="station-title-admin-agencynaming"
+                    class="hiid-meta-naming"
+                    >Agency</span
+                  >
+                </div>
               </div>
             </section>
+            <!-- END FIRST DRAWER -->
             <!-- SECOND DRAWER-->
             <section id="statControl" class="hiid-drawer">
               <div
@@ -132,7 +130,7 @@
                 Time/Date
               </div>
             </section>
-            <section id="metaControl" class="hiid-drawer">
+            <section id="mapControl" class="hiid-drawer">
               <div id="map-title" class="text-2xl text-white font-bold">
                 Location
               </div>

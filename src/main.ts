@@ -185,7 +185,7 @@ function renderStations(inStations, inHeader): void {
   for (const station of inStations) {
     const row = document.createElement('tr');
     const stationUUID: string = station['uuid'];
-    row.classList.add('movieRow');
+    row.classList.add('stationRow');
     row.setAttribute('id', stationUUID);
     row.addEventListener('dblclick', () => {
       fetchStation(station['uuid']);
@@ -197,7 +197,7 @@ function renderStations(inStations, inHeader): void {
         const thisTd = document.createElement('td');
 
         thisTd.innerText = String(station[fact]);
-        thisTd.classList.add('movieRowElement');
+        thisTd.classList.add('stationRowElement');
         row.appendChild(thisTd);
       }
     }
@@ -285,5 +285,4 @@ function keywordSearch(
       (station.water ?? '').toLowerCase().includes(term),
   );
   renderStations(filteredStations, factsToRender);
-  searchField.value = '';
 }
