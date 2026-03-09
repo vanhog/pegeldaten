@@ -251,42 +251,39 @@ fetch(gaugeStationsURLts)
     currentStation = mappedStations[0].uuid;
     renderStations(mappedStations, factsToRender);
 
-    ///this is where I am
-    const sorted = [...mappedStations].sort((a, b) =>
-      (a.num ?? '').localeCompare(b.num ?? ''),
-    );
-    console.log(sorted);
+    // ///this is where I am
+    // const sorted = [...mappedStations].sort((a, b) =>
+    //   (a.num ?? '').localeCompare(b.num ?? ''),
+    // );
+
     document
       .getElementById('searchButton')
       ?.addEventListener('click', () =>
         keywordSearch(mappedStations, factsToRender),
       );
+
+    document.getElementById('searchTerm')?.addEventListener('change', () => {
+      console.log('enter search');
+      keywordSearch(mappedStations, factsToRender);
+    });
   });
 
-function keywordSearch(inStations, factsToRender): void {
-  let searchTerm: string = (
-    document.getElementById('searchTerm') as HTMLInputElement
-  ).value;
-  console.log(searchTerm);
-  console.log(factsToRender);
-  console.log(inStations);
+function keywordSearch(
+  inStations: GaugeStationHeaderMap,
+  factsToRender: GaugeStationHeaderMap,
+): void {
+  let searchField = document.getElementById('searchTerm') as HTMLInputElement;
 
-  renderStations(inStations, factsToRender);
+  let searchTerm: string = searchField.value.toLowerCase();
+
+  const term = searchTerm.toLowerCase();
+
+  const filteredStations = inStations.filter(
+    (station: GaugeStationHeaderMap) =>
+      (station.num ?? '').toLowerCase().includes(term) ||
+      (station.name ?? '').toLowerCase().includes(term) ||
+      (station.water ?? '').toLowerCase().includes(term),
+  );
+  renderStations(filteredStations, factsToRender);
+  searchField.value = '';
 }
-
-// keyword search
-// document.getElementById('searchButton')?.addEventListener('click', () => {
-//   let searchTerm: string = (
-//     document.getElementById('searchTerm') as HTMLInputElement
-//   ).value;
-//   const results = movies.filter((movie) =>
-//     movie
-//       .slice(0, 4)
-//       .some((field) =>
-//         String(field)
-//           .toLocaleLowerCase()
-//           .includes(searchTerm.toLocaleLowerCase()),
-//       ),
-//   );
-//   renderStations(viewList, factsToRender);
-//});
