@@ -41,7 +41,7 @@
   }
 
   .tableHeaderRowElement {
-    @apply font-bold hover:cursor-pointer hover:text-hiid-text-glow text-left px-8 tracking-widest;
+    @apply font-bold hover:cursor-pointer hover:text-hiid-text-glow text-left px-8 tracking-widest sticky;
   }
   .stationRow {
     @apply bg-hiid-table-row-bg text-hiid-text-muted hover:bg-hiid-table-row-hover hover:text-hiid-text-accent px-1 py-1 text-base;
