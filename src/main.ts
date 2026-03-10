@@ -167,10 +167,17 @@ function renderStations(inStations, inHeader): void {
   tab.id = 'dataTable';
   sect?.appendChild(tab);
 
+  const tabCaption = document.createElement('caption');
+  tabCaption.innerText = 'Gauge Stations';
+  tabCaption.classList.add('sr-only');
+  tab?.appendChild(tabCaption);
+
   // table header
   const dataTableHeader: string[] = Object.keys(inHeader).map((element) =>
     element.toUpperCase(),
   );
+
+  const tabHeader = document.createElement('thead');
 
   const tableHeaderRow = document.createElement('tr');
   for (const thisCol of dataTableHeader) {
@@ -178,19 +185,29 @@ function renderStations(inStations, inHeader): void {
     tableHeaderCell.innerText = String(thisCol);
     tableHeaderCell.classList.add('tableHeaderRowElement');
     tableHeaderCell.setAttribute('id', `${thisCol}`);
+    tableHeaderCell.setAttribute('scope', 'col');
+    tableHeaderCell.setAttribute('tabindex', '0');
     tableHeaderCell.addEventListener('click', () => {
-      sortTable(inStations, `${thisCol}`);
+      sortTable(inStations, `${thisCol}`, true);
+    });
+    tableHeaderCell.addEventListener('dblclick', () => {
+      sortTable(inStations, `${thisCol}`, false);
     });
     tableHeaderRow.classList.add('tableHeaderRow');
     tableHeaderRow.appendChild(tableHeaderCell);
   }
-  tab.appendChild(tableHeaderRow);
+  tabHeader.appendChild(tableHeaderRow);
+  tab.appendChild(tabHeader);
+
+  // table body
+  const tabBody = document.createElement('tbody');
 
   for (const station of inStations) {
     const row = document.createElement('tr');
     const stationUUID: string = station['uuid'];
     row.classList.add('stationRow');
     row.setAttribute('id', stationUUID);
+    row.setAttribute('tabindex', '0');
     row.addEventListener('dblclick', () => {
       fetchStation(station['uuid']);
     });
@@ -205,11 +222,12 @@ function renderStations(inStations, inHeader): void {
         row.appendChild(thisTd);
       }
     }
-    tab?.appendChild(row);
+    tabBody.appendChild(row);
   }
+  tab.appendChild(tabBody);
 }
 
-function sortTable(inStations, inKey: string): void {
+function sortTable(inStations, inKey: string, inUp: boolean = true): void {
   console.log(`I would like to sort efter ${inKey}.`);
   console.log(
     inStations[0].num,
@@ -221,9 +239,15 @@ function sortTable(inStations, inKey: string): void {
   let viewList = inStations;
 
   if (isNaN(Number(inStations[0][inKey.toLowerCase()]))) {
-    viewList = inStations.sort((a, b) =>
-      String(a[inKey.toLowerCase()]).localeCompare(b[inKey.toLowerCase()]),
-    );
+    if (inUp) {
+      viewList = inStations.sort((a, b) =>
+        String(a[inKey.toLowerCase()]).localeCompare(b[inKey.toLowerCase()]),
+      );
+    } else {
+      viewList = inStations.sort((a, b) =>
+        String(b[inKey.toLowerCase()]).localeCompare(a[inKey.toLowerCase()]),
+      );
+    }
   } else {
     viewList = inStations.sort((a?, b?) => {
       const aRank =
@@ -234,7 +258,11 @@ function sortTable(inStations, inKey: string): void {
         b[inKey.toLowerCase()] === undefined
           ? Infinity
           : b[inKey.toLocaleLowerCase()];
-      return Number(aRank) - Number(bRank);
+      if (inUp) {
+        return Number(aRank) - Number(bRank);
+      } else {
+        return Number(bRank) - Number(aRank);
+      }
     });
 
     console.log('Sort mode: NUMBER');
