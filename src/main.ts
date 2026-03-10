@@ -19,8 +19,8 @@ const timeLocaleClassifier: string = 'de-DE';
 
 const factsToRender: GaugeStationHeaderMap = {
   num: 'number',
-  name: 'longname',
-  water: 'water-longname',
+  name: 'shortname',
+  waterlongname: 'water-longname',
   km: 'km',
   lat: 'latitude',
   lon: 'longitude',
@@ -35,7 +35,9 @@ let currentStations: GaugeStationHeaderMap;
 type GaugeStationHeaderKeys =
   | 'num'
   | 'name'
+  | 'longname'
   | 'water'
+  | 'waterlongname'
   | 'km'
   | 'lat'
   | 'lon'
@@ -46,8 +48,10 @@ type GaugeStationHeaderMap = Record<GaugeStationHeaderKeys, string>;
 
 const gaugeStationHeaderMap: GaugeStationHeaderMap = {
   num: 'number',
-  name: 'longname',
-  water: 'water.longname',
+  name: 'shortname',
+  longname: 'longname',
+  water: 'water.shortname',
+  waterlongname: 'water.longname',
   km: 'km',
   lat: 'latitude',
   lon: 'longitude',
@@ -251,11 +255,7 @@ fetch(gaugeStationsURLts)
     currentStation = mappedStations[0].uuid;
     renderStations(mappedStations, factsToRender);
 
-    // ///this is where I am
-    // const sorted = [...mappedStations].sort((a, b) =>
-    //   (a.num ?? '').localeCompare(b.num ?? ''),
-    // );
-
+    console.log(factsToRender);
     document
       .getElementById('searchButton')
       ?.addEventListener('click', () =>
@@ -282,6 +282,7 @@ function keywordSearch(
     (station: GaugeStationHeaderMap) =>
       (station.num ?? '').toLowerCase().includes(term) ||
       (station.name ?? '').toLowerCase().includes(term) ||
+      (station.waterlongname ?? '').toLowerCase().includes(term) ||
       (station.water ?? '').toLowerCase().includes(term),
   );
   renderStations(filteredStations, factsToRender);
