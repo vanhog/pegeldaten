@@ -150,27 +150,40 @@ function fetchStation(inUUID: string): Object {
 }
 
 function renderStations(inStations, inHeader): void {
-  const sect = document.getElementById('movieList');
+  const sect = document.getElementById('stationList');
 
-  // if there's already a table, remove it
-  const checkTable = document.getElementById('dataTable');
-  if (checkTable) {
-    sect?.removeChild(checkTable);
+  // remove old wrapper/table if present
+  const oldWrapper = document.getElementById('dataTableWrapper');
+  if (oldWrapper) {
+    sect?.removeChild(oldWrapper);
   }
+
+  // scroll wrapper
+  const tableWrapper = document.createElement('div');
+  tableWrapper.id = 'dataTableWrapper';
+  tableWrapper.classList.add(
+    'max-w-5xl',
+    'max-h-153',
+    'overflow-y-auto',
+    'rounded-2xl',
+  );
+  sect?.appendChild(tableWrapper);
 
   // table
   const tab = document.createElement('table');
-  tab.classList.add('max-w-5xl');
-  tab.classList.add('overflow-hidden');
-  tab.classList.add('bg-hiid-table-bg');
-  tab.classList.add('rounded-s-2xl');
+  tab.classList.add(
+    'w-full',
+    'border-separate',
+    'border-spacing-0',
+    'bg-hiid-table-bg',
+  );
   tab.id = 'dataTable';
-  sect?.appendChild(tab);
+  tableWrapper.appendChild(tab);
 
   const tabCaption = document.createElement('caption');
   tabCaption.innerText = 'Gauge Stations';
   tabCaption.classList.add('sr-only');
-  tab?.appendChild(tabCaption);
+  tab.appendChild(tabCaption);
 
   // table header
   const dataTableHeader: string[] = Object.keys(inHeader).map((element) =>
@@ -180,22 +193,35 @@ function renderStations(inStations, inHeader): void {
   const tabHeader = document.createElement('thead');
 
   const tableHeaderRow = document.createElement('tr');
+  tableHeaderRow.classList.add('tableHeaderRow');
+
   for (const thisCol of dataTableHeader) {
     const tableHeaderCell = document.createElement('th');
     tableHeaderCell.innerText = String(thisCol);
-    tableHeaderCell.classList.add('tableHeaderRowElement');
+
+    tableHeaderCell.classList.add(
+      'tableHeaderRowElement',
+      'sticky',
+      'top-0',
+      'z-10',
+      'bg-hiid-table-bg',
+    );
+
     tableHeaderCell.setAttribute('id', `${thisCol}`);
     tableHeaderCell.setAttribute('scope', 'col');
     tableHeaderCell.setAttribute('tabindex', '0');
+
     tableHeaderCell.addEventListener('click', () => {
       sortTable(inStations, `${thisCol}`, true);
     });
+
     tableHeaderCell.addEventListener('dblclick', () => {
       sortTable(inStations, `${thisCol}`, false);
     });
-    tableHeaderRow.classList.add('tableHeaderRow');
+
     tableHeaderRow.appendChild(tableHeaderCell);
   }
+
   tabHeader.appendChild(tableHeaderRow);
   tab.appendChild(tabHeader);
 
@@ -205,27 +231,113 @@ function renderStations(inStations, inHeader): void {
   for (const station of inStations) {
     const row = document.createElement('tr');
     const stationUUID: string = station['uuid'];
+
     row.classList.add('stationRow');
     row.setAttribute('id', stationUUID);
     row.setAttribute('tabindex', '0');
+
     row.addEventListener('dblclick', () => {
       fetchStation(station['uuid']);
     });
 
-    // cell
     for (const fact in station) {
       if (Object.keys(inHeader).includes(fact)) {
         const thisTd = document.createElement('td');
-
         thisTd.innerText = String(station[fact]);
         thisTd.classList.add('stationRowElement');
         row.appendChild(thisTd);
       }
     }
+
     tabBody.appendChild(row);
   }
+
   tab.appendChild(tabBody);
 }
+
+// function renderStations(inStations, inHeader): void {
+//   const sect = document.getElementById('stationList');
+
+//   // if there's already a table, remove it
+//   const checkTable = document.getElementById('dataTable');
+//   if (checkTable) {
+//     sect?.removeChild(checkTable);
+//   }
+
+//   // table
+//   const tab = document.createElement('table');
+//   tab.classList.add('max-w-5xl');
+//   tab.classList.add('overflow-hidden');
+//   tab.classList.add('bg-hiid-table-bg');
+//   tab.classList.add('rounded-s-2xl');
+//   tab.id = 'dataTable';
+//   sect?.appendChild(tab);
+
+//   const tabCaption = document.createElement('caption');
+//   tabCaption.innerText = 'Gauge Stations';
+//   tabCaption.classList.add('sr-only');
+//   tab?.appendChild(tabCaption);
+
+//   // table header
+//   const dataTableHeader: string[] = Object.keys(inHeader).map((element) =>
+//     element.toUpperCase(),
+//   );
+
+//   const tabHeader = document.createElement('thead');
+
+//   const tableHeaderRow = document.createElement('tr');
+//   for (const thisCol of dataTableHeader) {
+//     const tableHeaderCell = document.createElement('th');
+//     tableHeaderCell.innerText = String(thisCol);
+//     tableHeaderCell.classList.add('tableHeaderRowElement');
+//     tableHeaderCell.classList.add(
+//       'sticky',
+//       'top-0',
+//       'z-10',
+//       'bg-hiid-table-bg',
+//     );
+//     tableHeaderCell.setAttribute('id', `${thisCol}`);
+//     tableHeaderCell.setAttribute('scope', 'col');
+//     tableHeaderCell.setAttribute('tabindex', '0');
+//     tableHeaderCell.addEventListener('click', () => {
+//       sortTable(inStations, `${thisCol}`, true);
+//     });
+//     tableHeaderCell.addEventListener('dblclick', () => {
+//       sortTable(inStations, `${thisCol}`, false);
+//     });
+//     tableHeaderRow.classList.add('tableHeaderRow');
+//     tableHeaderRow.appendChild(tableHeaderCell);
+//   }
+//   tabHeader.appendChild(tableHeaderRow);
+//   tab.appendChild(tabHeader);
+
+//   // table body
+//   const tabBody = document.createElement('tbody');
+
+//   for (const station of inStations) {
+//     const row = document.createElement('tr');
+//     const stationUUID: string = station['uuid'];
+//     row.classList.add('stationRow');
+//     row.setAttribute('id', stationUUID);
+//     row.setAttribute('tabindex', '0');
+//     row.addEventListener('dblclick', () => {
+//       fetchStation(station['uuid']);
+//     });
+
+//     // cell
+//     for (const fact in station) {
+//       if (Object.keys(inHeader).includes(fact)) {
+//         const thisTd = document.createElement('td');
+
+//         thisTd.innerText = String(station[fact]);
+//         thisTd.classList.add('stationRowElement');
+//         row.appendChild(thisTd);
+//       }
+//     }
+//     tabBody.appendChild(row);
+//   }
+//   tab.appendChild(tabBody);
+// }
 
 function sortTable(inStations, inKey: string, inUp: boolean = true): void {
   console.log(`I would like to sort efter ${inKey}.`);
