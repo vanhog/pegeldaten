@@ -1,7 +1,0 @@
-@import 'tailwindcss';
-
-@layer components {
-  .grid-cell {
-    @apply bg-amber-100 rounded-xl py-3 px-5;
-  }
-}
