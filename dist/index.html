@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Hydrological Infrastructure Intelligence Dashboard - Training Project
+    </title>
+    <link rel="stylesheet" href="./tw.css" />
+  </head>
+  <body class="hiid-body">
+    <main class="flex flex-col justify-center items-center">
+      <div
+        id="centered-box"
+        class="flex flex-col justify-center items-center my-5"
+      >
+        <div id="grid-controller" class="flex flex-row flex-wrap gap-3">
+          <div id="left-hand-side" class="flex flex-col gap-1">
+            <section class="hiid-header">
+              <h1 class="text-2xl text-white font-bold">Gauge Stations</h1>
+            </section>
+            <section id="listControl" class="hiid-list-control">
+              <fieldset
+                class="flex flex-row flex-wrap justify-start items-center"
+              >
+                <div id="searchField" class="flex flex-row">
+                  <label for="searchTerm" class="sr-only">Search</label>
+                  <img
+                    src="./magnifying.svg"
+                    class="w-8 inline me-5"
+                    alt="Icon of a magnifying glass"
+                  />
+                  <input
+                    type="text"
+                    id="searchTerm"
+                    size="30%"
+                    class="bg-hiid-bg px-3 text-hiid-text-glow rounded-xl text-base"
+                    placeholder="NUM/NAME/WATER"
+                  />
+                  <button
+                    type="button"
+                    id="searchButton"
+                    class="mx-5 p-1 bg-hiid-bg border border-hiid-bg text-hiid-text-glow rounded-xl inline hover:bg-gray-600 hover:text-gray-200 hover:border-hiid-text-glow active:scale-98"
+                  >
+                    Search
+                  </button>
+                </div>
+              </fieldset>
+            </section>
+            <section class="bg-hiid-table-bg min-h-153 rounded-2xl">
+              <div
+                id="stationList"
+                class="max-h-153 overflow-y-auto rounded-2xl"
+              ></div>
+            </section>
+          </div>
+          <div id="right-hand-side" class="flex flex-col gap-2">
+            <!-- FIRST DRAWER-->
+            <section id="metaControl" class="hiid-drawer">
+              <div
+                id="station-title-admin-shortname"
+                class="text-2xl text-white font-bold"
+              >
+                Station name
+              </div>
+              <div
+                id="station-title-name"
+                class="flex flex-row justify-between items-baseline mb-4"
+              >
+                <div class="flex flex-col justify-center items-start">
+                  <span
+                    id="station-title-admin-longname"
+                    class="min-h-7"
+                  ></span>
+                  <span
+                    id="station-title-admin-longnaming"
+                    class="hiid-meta-naming"
+                    >Longname</span
+                  >
+                </div>
+                <div class="flex flex-col justify-end items-end">
+                  <span id="station-title-admin-water" class="min-h-7"></span>
+                  <span
+                    id="station-title-admin-waternaming"
+                    class="hiid-meta-naming"
+                    >Water</span
+                  >
+                </div>
+              </div>
+
+              <div
+                id="station-title-admin-meta"
+                class="flex flex-row justify-between gap-3"
+              >
+                <div class="flex flex-col justify-center items-start">
+                  <span id="station-title-admin-number" class="min-h-7"></span>
+                  <span
+                    id="station-title-admin-numbernaming"
+                    class="hiid-meta-naming"
+                    >Number</span
+                  >
+                </div>
+                <div class="flex flex-col justify-end items-end">
+                  <span id="station-title-admin-agency" class="min-h-7"></span>
+                  <span
+                    id="station-title-admin-agencynaming"
+                    class="hiid-meta-naming"
+                    >Agency</span
+                  >
+                </div>
+              </div>
+            </section>
+            <!-- END FIRST DRAWER -->
+            <!-- SECOND DRAWER-->
+            <section id="statControl" class="hiid-drawer">
+              <div
+                id="current-measurement-title"
+                class="text-2xl text-white font-bold"
+              >
+                Current Measurement
+              </div>
+              <div
+                id="cmv"
+                class="flex flex-row justify-center items-baseline gap-4"
+              >
+                <div
+                  id="current-measurement-value"
+                  class="text-7xl text-center text-hiid-text-glow pt-8"
+                >
+                  ---
+                </div>
+                <span id="current-measurement-unit" class="text-4xl"></span>
+              </div>
+              <div id="cmv-timestamp" class="current-measurement-time">
+                Time/Date
+              </div>
+            </section>
+            <section id="mapControl" class="hiid-drawer">
+              <div id="map-title" class="text-2xl text-white font-bold">
+                Location
+              </div>
+              This is the map's space.
+            </section>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="./prod.js"></script>
+  </body>
+</html>
