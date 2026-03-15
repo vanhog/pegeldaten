@@ -196,6 +196,7 @@ function renderStations(inStations, inHeader) {
     });
 
     tableHeaderCell.addEventListener('dblclick', () => {
+      console.log('dbl click');
       sortTable(inStations, `${thisCol}`, false);
     });
 
