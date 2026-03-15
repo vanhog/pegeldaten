@@ -3,7 +3,7 @@ import { Temporal } from 'https://esm.sh/@js-temporal/polyfill';
 
 //settings
 const restStations =
-  'http://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
+  'https://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
 const aisleTSM = '.json?includeTimeseries=true&includeCurrentMeasurement=true';
 
 const gaugeStationsURL =
