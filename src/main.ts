@@ -162,22 +162,12 @@ function renderStations(inStations, inHeader): void {
   // scroll wrapper
   const tableWrapper = document.createElement('div');
   tableWrapper.id = 'dataTableWrapper';
-  tableWrapper.classList.add(
-    'max-w-5xl',
-    'max-h-153',
-    'overflow-y-auto',
-    'rounded-2xl',
-  );
+  tableWrapper.classList.add('hiid-table-wrapper');
   sect?.appendChild(tableWrapper);
 
   // table
   const tab = document.createElement('table');
-  tab.classList.add(
-    'w-full',
-    'border-separate',
-    'border-spacing-0',
-    'bg-hiid-table-bg',
-  );
+  tab.classList.add('hiid-table');
   tab.id = 'dataTable';
   tableWrapper.appendChild(tab);
 
@@ -200,13 +190,7 @@ function renderStations(inStations, inHeader): void {
     const tableHeaderCell = document.createElement('th');
     tableHeaderCell.innerText = String(thisCol);
 
-    tableHeaderCell.classList.add(
-      'tableHeaderRowElement',
-      'sticky',
-      'top-0',
-      'z-10',
-      'bg-hiid-table-bg',
-    );
+    tableHeaderCell.classList.add('tableHeaderRowElement');
 
     tableHeaderCell.setAttribute('id', `${thisCol}`);
     tableHeaderCell.setAttribute('scope', 'col');
@@ -215,10 +199,6 @@ function renderStations(inStations, inHeader): void {
     tableHeaderCell.addEventListener('click', () => {
       sortTable(inStations, `${thisCol}`, true);
     });
-
-    // tableHeaderCell.addEventListener('dblclick', () => {
-    //   sortTable(inStations, `${thisCol}`, false);
-    // });
 
     tableHeaderRow.appendChild(tableHeaderCell);
   }
@@ -257,13 +237,14 @@ function renderStations(inStations, inHeader): void {
 }
 
 function sortTable(inStations, inKey: string, inUp: boolean = true): void {
-  console.log(`I would like to sort efter ${inKey}.`);
-  console.log(
-    inStations[0].num,
-    inStations[0]['num'],
-    inStations[0][inKey.toLowerCase()],
-    Number(inStations[0][inKey.toLowerCase()]),
-  );
+  // for debugging reasons only
+  // console.log(`I would like to sort efter ${inKey}.`);
+  // console.log(
+  //   inStations[0].num,
+  //   inStations[0]['num'],
+  //   inStations[0][inKey.toLowerCase()],
+  //   Number(inStations[0][inKey.toLowerCase()]),
+  // );
 
   if (sortCol === inKey) {
     sortDirUp = !sortDirUp;

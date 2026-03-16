@@ -234,15 +234,16 @@ function renderStations(inStations, inHeader) {
 }
 
 function sortTable(inStations, inKey, inUp = true) {
-  console.log(
-    `I would like to sort efter ${inKey}, and direction up is ${inUp}.`,
-  );
-  console.log(
-    inStations[0].num,
-    inStations[0]['num'],
-    inStations[0][inKey.toLowerCase()],
-    Number(inStations[0][inKey.toLowerCase()]),
-  );
+  // for debugging reasons only
+  // console.log(
+  //   `I would like to sort efter ${inKey}, and direction up is ${inUp}.`,
+  // );
+  // console.log(
+  //   inStations[0].num,
+  //   inStations[0]['num'],
+  //   inStations[0][inKey.toLowerCase()],
+  //   Number(inStations[0][inKey.toLowerCase()]),
+  // );
 
   if (sortCol === inKey) {
     sortDirUp = !sortDirUp;

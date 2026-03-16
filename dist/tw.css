@@ -317,9 +317,6 @@
   .gap-4 {
     gap: calc(var(--spacing) * 4);
   }
-  .overflow-hidden {
-    overflow: hidden;
-  }
   .overflow-y-auto {
     overflow-y: auto;
   }
@@ -328,10 +325,6 @@
   }
   .rounded-xl {
     border-radius: var(--radius-xl);
-  }
-  .rounded-s-2xl {
-    border-start-start-radius: var(--radius-2xl);
-    border-end-start-radius: var(--radius-2xl);
   }
   .border {
     border-style: var(--tw-border-style);
@@ -435,11 +428,29 @@
     padding-inline: calc(var(--spacing) * 8);
     padding-block: calc(var(--spacing) * 3);
   }
+  .hiid-table-wrapper {
+    max-height: calc(var(--spacing) * 153);
+    max-width: var(--container-5xl);
+    overflow-y: auto;
+    border-radius: var(--radius-2xl);
+  }
+  .hiid-table {
+    width: 100%;
+    border-collapse: separate;
+    --tw-border-spacing-x: calc(var(--spacing) * 0);
+    --tw-border-spacing-y: calc(var(--spacing) * 0);
+    border-spacing: var(--tw-border-spacing-x) var(--tw-border-spacing-y);
+    background-color: var(--color-hiid-table-bg);
+  }
   .tableHeaderRow {
     background-color: var(--color-hiid-table-header-bg-glow);
     color: var(--color-hiid-text-primary);
   }
   .tableHeaderRowElement {
+    position: sticky;
+    top: calc(var(--spacing) * 0);
+    z-index: 10;
+    background-color: var(--color-hiid-table-bg);
     padding-inline: calc(var(--spacing) * 8);
     text-align: left;
     --tw-font-weight: var(--font-weight-bold);

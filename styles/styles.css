@@ -39,13 +39,24 @@
     @apply bg-hiid-table-bg rounded-2xl px-8 py-3;
   }
 
+  .hiid-table-wrapper {
+    @apply max-w-5xl max-h-153 overflow-y-auto rounded-2xl;
+  }
+  .hiid-table {
+    @apply w-full border-separate border-spacing-0 bg-hiid-table-bg;
+  }
   .tableHeaderRow {
     @apply bg-hiid-table-header-bg-glow text-hiid-text-primary;
   }
 
-  .tableHeaderRowElement {
+  /*.tableHeaderRowElement {
     @apply font-bold hover:cursor-pointer hover:text-hiid-text-glow text-left px-8 tracking-widest;
+  }*/
+
+  .tableHeaderRowElement {
+    @apply font-bold hover:cursor-pointer hover:text-hiid-text-glow text-left px-8 tracking-widest sticky top-0 z-10 bg-hiid-table-bg;
   }
+
   .stationRow {
     @apply bg-hiid-table-row-bg text-hiid-text-muted hover:bg-hiid-table-row-hover hover:text-hiid-text-accent hover:border px-1 py-1 text-base;
   }
