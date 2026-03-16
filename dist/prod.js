@@ -27,7 +27,9 @@ const factsToRender = {
 
 //state
 let currentStation = '';
-let currentStations;
+
+let sortCol = '';
+let sortDirUp = false;
 
 const gaugeStationHeaderMap = {
   num: 'number',
@@ -195,11 +197,6 @@ function renderStations(inStations, inHeader) {
       sortTable(inStations, `${thisCol}`, true);
     });
 
-    tableHeaderCell.addEventListener('dblclick', () => {
-      console.log('dbl click');
-      sortTable(inStations, `${thisCol}`, false);
-    });
-
     tableHeaderRow.appendChild(tableHeaderCell);
   }
 
@@ -247,10 +244,19 @@ function sortTable(inStations, inKey, inUp = true) {
     Number(inStations[0][inKey.toLowerCase()]),
   );
 
+  if (sortCol === inKey) {
+    sortDirUp = !sortDirUp;
+  } else {
+    sortCol = inKey;
+    sortDirUp = true;
+  }
+
+  let sortUp = sortDirUp;
+
   let viewList = inStations;
 
   if (isNaN(Number(inStations[0][inKey.toLowerCase()]))) {
-    if (inUp) {
+    if (sortUp) {
       viewList = inStations.sort((a, b) =>
         String(a[inKey.toLowerCase()]).localeCompare(b[inKey.toLowerCase()]),
       );
@@ -269,7 +275,7 @@ function sortTable(inStations, inKey, inUp = true) {
         b[inKey.toLowerCase()] === undefined
           ? Infinity
           : b[inKey.toLocaleLowerCase()];
-      if (inUp) {
+      if (sortUp) {
         return Number(aRank) - Number(bRank);
       } else {
         return Number(bRank) - Number(aRank);

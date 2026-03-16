@@ -28,10 +28,11 @@ const factsToRender: GaugeStationHeaderMap = {
 
 //state
 let currentStation: string = '';
-let currentStations: GaugeStationHeaderMap;
+
+let sortCol: string = '';
+let sortDirUp: boolean = false;
 
 //consts and variables
-
 type GaugeStationHeaderKeys =
   | 'num'
   | 'name'
@@ -215,9 +216,9 @@ function renderStations(inStations, inHeader): void {
       sortTable(inStations, `${thisCol}`, true);
     });
 
-    tableHeaderCell.addEventListener('dblclick', () => {
-      sortTable(inStations, `${thisCol}`, false);
-    });
+    // tableHeaderCell.addEventListener('dblclick', () => {
+    //   sortTable(inStations, `${thisCol}`, false);
+    // });
 
     tableHeaderRow.appendChild(tableHeaderCell);
   }
@@ -264,10 +265,19 @@ function sortTable(inStations, inKey: string, inUp: boolean = true): void {
     Number(inStations[0][inKey.toLowerCase()]),
   );
 
+  if (sortCol === inKey) {
+    sortDirUp = !sortDirUp;
+  } else {
+    sortCol = inKey;
+    sortDirUp = true;
+  }
+
+  let sortUp: boolean = sortDirUp;
+
   let viewList = inStations;
 
   if (isNaN(Number(inStations[0][inKey.toLowerCase()]))) {
-    if (inUp) {
+    if (sortUp) {
       viewList = inStations.sort((a, b) =>
         String(a[inKey.toLowerCase()]).localeCompare(b[inKey.toLowerCase()]),
       );
@@ -286,7 +296,7 @@ function sortTable(inStations, inKey: string, inUp: boolean = true): void {
         b[inKey.toLowerCase()] === undefined
           ? Infinity
           : b[inKey.toLocaleLowerCase()];
-      if (inUp) {
+      if (sortUp) {
         return Number(aRank) - Number(bRank);
       } else {
         return Number(bRank) - Number(aRank);
