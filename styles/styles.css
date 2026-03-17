@@ -70,6 +70,12 @@
   }
 
   .current-measurement-time {
-    @apply text-center text-white;
+    @apply text-center text-hiid-text-muted;
+  }
+  .attribution {
+    @apply text-xs text-center text-hiid-text-primary;
+  }
+  .attribution a {
+    @apply text-hiid-text-glow;
   }
 }

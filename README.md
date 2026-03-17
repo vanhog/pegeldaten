@@ -1,5 +1,7 @@
 # Gauge Stations Dashboard (Pegeldaten)
 
+**For training use only. Do not use in production. No warranty.**
+
 This is a free-style training project created as part of the OpenCampus Web Development Program 2025.
 
 ## Table of contents
@@ -33,11 +35,11 @@ The application should be able to:
   - Current measurements in a second drawer
 - Reserve a third drawer for future map integration
 - Provide search functionality across:
- 	 - short name
-  	- long name
-  	- water short name
-  	- water long name
-  	- station number
+  - short name
+    - long name
+    - water short name
+    - water long name
+    - station number
 
 ### Screenshot
 
@@ -45,7 +47,7 @@ The application should be able to:
 
 ### Links
 
-- Solution URL: https://github.com/vanhog/pegeldaten  
+- Solution URL: https://github.com/vanhog/pegeldaten
 - Live Site URL: https://vanhogs-pegeldaten.netlify.app/
 
 ## My process
@@ -91,7 +93,6 @@ Next steps:
 
 ## Author
 
-- Website: https://www.hoogestraat.com  
-- Frontend Mentor: https://www.frontendmentor.io/profile/vanhog  
+- Website: https://www.hoogestraat.com
+- Frontend Mentor: https://www.frontendmentor.io/profile/vanhog
 - GitHub: https://github.com/vanhog
-

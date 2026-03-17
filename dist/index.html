@@ -6,7 +6,7 @@
     <title>
       Hydrological Infrastructure Intelligence Dashboard - Training Project
     </title>
-    <link rel="stylesheet" href="./tw.css" />
+    <link rel="stylesheet" href="./styles/styles.css" />
   </head>
   <body class="hiid-body">
     <main class="flex flex-col justify-center items-center">
@@ -26,7 +26,7 @@
                 <div id="searchField" class="flex flex-row">
                   <label for="searchTerm" class="sr-only">Search</label>
                   <img
-                    src="./magnifying.svg"
+                    src="./assets/magnifying.svg"
                     class="w-8 inline me-5"
                     alt="Icon of a magnifying glass"
                   />
@@ -145,6 +145,23 @@
         </div>
       </div>
     </main>
-    <script type="module" src="./prod.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+    <footer class="mt-12">
+      <h2 class="sr-only">Attributions</h2>
+      <div class="attribution mt-6">
+        Coded by
+        <a
+          href="https://github.com/vanhog"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Dieter H. Hoogestraat (dee van hog)</a
+        >. Source code:
+        <a href="https://github.com/vanhog/pegeldaten"
+          >https://github.com/vanhog/pegeldaten</a
+        >
+
+        <p>For training use only. Do not use in production. No warranty.</p>
+      </div>
+    </footer>
   </body>
 </html>
