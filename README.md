@@ -33,15 +33,15 @@ The application should be able to:
   - Current measurements in a second drawer
 - Reserve a third drawer for future map integration
 - Provide search functionality across:
-  - short name
-  - long name
-  - water short name
-  - water long name
-  - station number
+ 	 - short name
+  	- long name
+  	- water short name
+  	- water long name
+  	- station number
 
 ### Screenshot
 
-![](./screenshot.png)
+![](./assets/screenshot.png)
 
 ### Links
 
