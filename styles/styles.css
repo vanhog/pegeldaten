@@ -66,9 +66,11 @@
   }
 
   .hiid-meta-naming {
-    @apply text-sm font-bold text-white;
+    @apply text-sm font-normal text-hiid-text-muted;
   }
-
+  .hiid-meta-data {
+    @apply text-base font-bold text-hiid-text-glow;
+  }
   .current-measurement-time {
     @apply text-center text-hiid-text-muted;
   }
