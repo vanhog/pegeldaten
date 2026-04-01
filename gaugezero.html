@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gaugzerotest</title>
+    <link rel="stylesheet" href="./styles/styles.css" />
+  </head>
+  <body>
+    <main>
+      <section id="data"></section>
+      <!-- SECOND DRAWER-->
+      <section id="statControl" class="hiid-drawer">
+        <div
+          id="current-measurement-title"
+          class="text-2xl text-white font-bold"
+        >
+          Current Measurement
+        </div>
+        <div
+          id="cmv"
+          class="flex flex-row justify-center items-baseline gap-4 bg-red-400"
+        >
+          <div
+            class="flex flex-row justify-between items-baseline w-[60%] bg-amber-400"
+          >
+            <div class="flex flex-col justify-baseline items-end">
+              <div>left</div>
+              <div>left unit</div>
+            </div>
+            <div>
+              <span
+                id="current-measurement-value"
+                class="text-7xl text-center text-hiid-text-glow pt-8"
+              >
+                ---
+              </span>
+              <span id="current-measurement-unit" class="text-4xl"></span>
+            </div>
+            <div class="flex flex-col justify-baseline items-start">
+              <div>right</div>
+              <div>right unit</div>
+            </div>
+          </div>
+        </div>
+        <div id="cmv-timestamp" class="current-measurement-time">Time/Date</div>
+      </section>
+    </main>
+  </body>
+  <script type="module" src="./src/gaugezerotester.js"></script>
+</html>
