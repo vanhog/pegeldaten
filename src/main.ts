@@ -299,7 +299,7 @@ fetch(gaugeStationsURLts)
   })
   .then((data) => {
     const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
-    currentStation = mappedStations[0].uuid;
+    //currentStation = mappedStations[0].uuid;
     renderStations(mappedStations, factsToRender);
 
     console.log(factsToRender);

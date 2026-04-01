@@ -22,22 +22,26 @@
           class="flex flex-row justify-center items-baseline gap-4 bg-red-400"
         >
           <div
-            class="flex flex-row justify-between items-baseline w-[60%] bg-amber-400"
+            class="flex flex-row justify-between items-end w-[60%] bg-amber-400"
           >
-            <div class="flex flex-col justify-baseline items-end">
+            <div class="flex flex-col justify-end items-end border-1">
               <div>left</div>
               <div>left unit</div>
             </div>
-            <div>
-              <span
+
+            <div
+              class="flex flex-row justify-center items-baseline border-1 bg-green-300"
+            >
+              <div
                 id="current-measurement-value"
-                class="text-7xl text-center text-hiid-text-glow pt-8"
+                class="text-7xl text-center text-hiid-text-glow"
               >
                 ---
-              </span>
-              <span id="current-measurement-unit" class="text-4xl"></span>
+              </div>
+              <div id="current-measurement-unit" class="text-4xl"></div>
             </div>
-            <div class="flex flex-col justify-baseline items-start">
+
+            <div class="flex flex-col justify-end items-start border-1">
               <div>right</div>
               <div>right unit</div>
             </div>
