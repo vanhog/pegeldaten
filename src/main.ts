@@ -32,6 +32,9 @@ let currentStation: string = '';
 let sortCol: string = '';
 let sortDirUp: boolean = false;
 
+let map = '';
+let marker = '';
+
 //consts and variables
 type GaugeStationHeaderKeys =
   | 'num'
@@ -110,8 +113,8 @@ function renderDrawer02(data: unknown) {
       // store as UTC for later use
       tStamp = Temporal.Instant.from(waterTS[0].currentMeasurement.timestamp);
 
-      document.getElementById('current-measurement-title').innerText =
-        searchTerm;
+      //document.getElementById('current-measurement-title').innerText =
+      //searchTerm;
       document.getElementById('current-measurement-value').innerText =
         waterTS[0].currentMeasurement.value;
       document.getElementById('current-measurement-unit').innerText =
@@ -121,6 +124,40 @@ function renderDrawer02(data: unknown) {
         tStamp.toZonedDateTimeISO(timeZoneClassifier),
       );
     }
+  }
+}
+
+function renderDrawer03(data: unknown, zoom: number = 10) {
+  /* This is somewhat "unstructurated". 
+  It needs map and marker as global state variables,
+  even though I would like to have the whole 
+  functionality encapsulated in this function.
+  I'm sure, I'll find a solution later, but for 
+  now it's too nice to have a map to drop it.
+  */
+
+  const lat = Number(data.latitude);
+  const lon = Number(data.longitude);
+
+  if (!map) {
+    // create map only once
+    map = L.map('map').setView([lat, lon], zoom);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+  } else {
+    // just move the map
+    map.setView([lat, lon], zoom);
+  }
+
+  // update marker
+  if (marker) {
+    marker.setLatLng([lat, lon]);
+  } else {
+    marker = L.marker([lat, lon]).addTo(map);
   }
 }
 
@@ -147,6 +184,7 @@ function fetchStation(inUUID: string): Object {
     .then((data) => {
       renderDrawer01(data);
       renderDrawer02(data);
+      renderDrawer03(data);
     });
 }
 
@@ -301,6 +339,7 @@ fetch(gaugeStationsURLts)
     const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
     currentStation = mappedStations[0].uuid;
     renderStations(mappedStations, factsToRender);
+    renderDrawer03({ longitude: 10.17055, latitude: 53.17903 }, 5);
 
     console.log(factsToRender);
     document

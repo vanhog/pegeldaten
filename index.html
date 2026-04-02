@@ -7,6 +7,17 @@
       Hydrological Infrastructure Intelligence Dashboard - Training Project
     </title>
     <link rel="stylesheet" href="./styles/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
   </head>
   <body class="hiid-body">
     <main class="flex flex-col justify-center items-center">
@@ -144,12 +155,20 @@
                 Time/Date
               </div>
             </section>
+            <!-- END SECOND DRAWER -->
+            <!-- THIRD DRAWER-->
             <section id="mapControl" class="hiid-drawer">
               <div id="map-title" class="text-2xl text-white font-bold">
                 Location
               </div>
-              This is the map's space.
+
+              <div
+                id="map"
+                style="height: 170px"
+                class="rounded-xl border border-hiid-text-glow"
+              ></div>
             </section>
+            <!-- END THIRD DRAWER -->
           </div>
         </div>
       </div>
