@@ -218,7 +218,8 @@ function renderStations(inStations, inHeader): void {
     row.setAttribute('tabindex', '0');
 
     row.addEventListener('dblclick', () => {
-      fetchStation(station['uuid']);
+      console.log(fetchStation(station['uuid']));
+      //renderDrawer02(fetchStation(station['uuid']));
     });
 
     for (const fact in station) {
