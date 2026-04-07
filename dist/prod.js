@@ -1,6 +1,7 @@
 'use strict';
-import { getNestedValue, mapObject } from './helper.ts';
-import { Temporal } from '@js-temporal/polyfill';
+
+import { mapObject } from './helper.js';
+import { Temporal } from 'https://esm.sh/@js-temporal/polyfill';
 //settings
 var restStations =
   'http://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
