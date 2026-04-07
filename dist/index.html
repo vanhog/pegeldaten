@@ -6,7 +6,7 @@
     <title>
       Hydrological Infrastructure Intelligence Dashboard - Training Project
     </title>
-    <link rel="stylesheet" href="./tw.css" />
+    <link rel="stylesheet" href="./styles/styles.css" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -37,7 +37,7 @@
                 <div id="searchField" class="flex flex-row">
                   <label for="searchTerm" class="sr-only">Search</label>
                   <img
-                    src="./magnifying.svg"
+                    src="./assets/magnifying.svg"
                     class="w-8 inline me-5"
                     alt="Icon of a magnifying glass"
                   />
@@ -70,7 +70,7 @@
             <section id="metaControl" class="hiid-drawer">
               <div
                 id="station-title-admin-shortname"
-                class="text-2xl text-white font-bold"
+                class="text-2xl text-white font-bold mb-4"
               >
                 Station name
               </div>
@@ -81,7 +81,7 @@
                 <div class="flex flex-col justify-center items-start">
                   <span
                     id="station-title-admin-longname"
-                    class="min-h-7"
+                    class="min-h-7 hiid-meta-data"
                   ></span>
                   <span
                     id="station-title-admin-longnaming"
@@ -90,7 +90,10 @@
                   >
                 </div>
                 <div class="flex flex-col justify-end items-end">
-                  <span id="station-title-admin-water" class="min-h-7"></span>
+                  <span
+                    id="station-title-admin-water"
+                    class="min-h-7 hiid-meta-data"
+                  ></span>
                   <span
                     id="station-title-admin-waternaming"
                     class="hiid-meta-naming"
@@ -104,7 +107,10 @@
                 class="flex flex-row justify-between gap-3"
               >
                 <div class="flex flex-col justify-center items-start">
-                  <span id="station-title-admin-number" class="min-h-7"></span>
+                  <span
+                    id="station-title-admin-number"
+                    class="min-h-7 hiid-meta-data"
+                  ></span>
                   <span
                     id="station-title-admin-numbernaming"
                     class="hiid-meta-naming"
@@ -112,7 +118,10 @@
                   >
                 </div>
                 <div class="flex flex-col justify-end items-end">
-                  <span id="station-title-admin-agency" class="min-h-7"></span>
+                  <span
+                    id="station-title-admin-agency"
+                    class="min-h-7 hiid-meta-data"
+                  ></span>
                   <span
                     id="station-title-admin-agencynaming"
                     class="hiid-meta-naming"
@@ -146,17 +155,25 @@
                 Time/Date
               </div>
             </section>
+            <!-- END SECOND DRAWER -->
+            <!-- THIRD DRAWER-->
             <section id="mapControl" class="hiid-drawer">
               <div id="map-title" class="text-2xl text-white font-bold">
                 Location
               </div>
-              This is the map's space.
+
+              <div
+                id="map"
+                style="height: 170px"
+                class="rounded-xl border border-hiid-text-glow"
+              ></div>
             </section>
+            <!-- END THIRD DRAWER -->
           </div>
         </div>
       </div>
     </main>
-    <script type="module" src="./prod.js"></script>
+    <script type="module" src="/src/main.ts"></script>
     <footer class="mt-12">
       <h2 class="sr-only">Attributions</h2>
       <div class="attribution mt-6">
