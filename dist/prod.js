@@ -4,7 +4,7 @@ import { mapObject } from './helper.js';
 import { Temporal } from 'https://esm.sh/@js-temporal/polyfill';
 //settings
 var restStations =
-  'http://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
+  'https://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
 var aisleTSM = '.json?includeTimeseries=true&includeCurrentMeasurement=true';
 var gaugeStationsURL =
   'https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json';
