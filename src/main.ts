@@ -3,9 +3,12 @@ import { Temporal } from '@js-temporal/polyfill';
 
 //settings
 const restStations: string =
-  'http://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
-const aisleTSM: string =
+  'https://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
+
+const fetchStationAisleTSM: string =
   '.json?includeTimeseries=true&includeCurrentMeasurement=true';
+
+const fetchTSAisleTSM: string = '/W/measurements.json?start=P15D';
 
 const gaugeStationsURL: string =
   'https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json';
@@ -179,9 +182,69 @@ const MapModule = (() => {
    */
   return { render };
 })();
+
+function renderTS(inTS) {
+  //const data = inTS;
+  const data = [
+    { date: '2024-01-01', temperature: 4.2 },
+    { date: '2024-02-01', temperature: 5.1 },
+    { date: '2024-03-01', temperature: 8.4 },
+    { date: '2024-04-01', temperature: 12.0 },
+  ];
+  const ctx = document.getElementById('chart-container');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map((d) => d.date),
+      datasets: [
+        {
+          label: 'Temperature',
+          data: data.map((d) => d.temperature),
+          borderWidth: 2,
+          tension: 0.25,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Date',
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Temperature [°C]',
+          },
+        },
+      },
+    },
+  });
+}
+function fetchTS(inUUID: string) {
+  const fetchURL = restStations + inUUID + fetchTSAisleTSM;
+  console.log(fetchURL);
+  fetch(fetchURL)
+    .then((response) => {
+      if (!response.ok)
+        return console.log('Gauge station could not be loaded!');
+
+      return response.json();
+    })
+    .then((data) => {
+      console.log('We have some data');
+      console.log(data);
+      renderTS();
+    });
+}
 //
-function fetchStation(inUUID: string): Object {
-  const fetchURL = restStations + inUUID + aisleTSM;
+function fetchStation(inUUID: string) {
+  const fetchURL = restStations + inUUID + fetchStationAisleTSM;
 
   // if there's station selected, remove selection style
   if (currentStation) {
@@ -202,8 +265,9 @@ function fetchStation(inUUID: string): Object {
     .then((data) => {
       renderDrawer01(data);
       renderDrawer02(data);
-      //renderDrawer03(data);
+      //TODO: MapModule only, when Lat/Lon supplied
       MapModule.render(data, 13);
+      fetchTS(inUUID);
     });
 }
 
