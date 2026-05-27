@@ -1,4 +1,4 @@
-import { getNestedValue, mapObject, getElementOrThrow } from './helper.ts';
+import { mapObject, getElementOrThrow } from './helper.ts';
 import { Temporal } from '@js-temporal/polyfill';
 
 import L from 'leaflet';
@@ -15,9 +15,6 @@ const fetchStationAisleTSM: string =
 
 const fetchTSAisleTSM: string = '/W/measurements.json?start=P15D';
 
-const gaugeStationsURL: string =
-  'https://pegelonline.wsv.de/webservices/rest-api/v2/stations.json';
-
 const gaugeStationsURLts: string =
   'https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json?includeTimeseries=true&includeCurrentMeasurement=true';
 
@@ -25,7 +22,7 @@ const searchTermWasserstand: string = 'WASSERSTAND';
 const timeZoneClassifier: string = 'Europe/Copenhagen';
 const timeLocaleClassifier: string = 'de-DE';
 
-const factsToRender: Partial<GaugeStationHeaderMap> = {
+const factsToRender: GaugeStationHeaderSelection = {
   num: 'number',
   name: 'shortname',
   waterlongname: 'water-longname',
@@ -42,15 +39,15 @@ let sortDirUp: boolean = false;
 
 //consts and variables
 
-type CurrentMeasurement = {
+type TimedMeasurement = {
   timestamp: string;
   value: number;
 };
 
-type TimeSeries = {
+type CurrentMeasurement = {
   longname: string;
   unit: string;
-  currentMeasurement: CurrentMeasurement;
+  currentMeasurement: TimedMeasurement;
 };
 
 type StationDetails = {
@@ -64,7 +61,7 @@ type StationDetails = {
     shortname: string;
     longname: string;
   };
-  timeseries?: TimeSeries[];
+  timeseries?: CurrentMeasurement[];
 };
 
 type Coordinates = {
@@ -85,6 +82,8 @@ type GaugeStationHeaderKeys =
   | 'agency';
 
 type GaugeStationHeaderMap = Record<GaugeStationHeaderKeys, string>;
+type GaugeStationRow = Partial<Record<GaugeStationHeaderKeys, string | number>>;
+type GaugeStationHeaderSelection = Partial<GaugeStationHeaderMap>;
 
 const gaugeStationHeaderMap: GaugeStationHeaderMap = {
   num: 'number',
@@ -211,24 +210,22 @@ const MapModule = (() => {
   return { render };
 })();
 
-function renderTS(inTS) {
-  //const data = inTS;
-  const data = [
-    { date: '2024-01-01', temperature: 4.2 },
-    { date: '2024-02-01', temperature: 5.1 },
-    { date: '2024-03-01', temperature: 8.4 },
-    { date: '2024-04-01', temperature: 12.0 },
-  ];
-  const ctx = document.getElementById('chart-container');
+function renderTS(inTS: TimedMeasurement[]) {
+  const ctx = getElementOrThrow('chart-container') as HTMLCanvasElement;
+
+  const existingChart = Chart.getChart(ctx);
+  if (existingChart) {
+    existingChart.destroy();
+  }
 
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.map((d) => d.date),
+      labels: inTS.map((d) => d.timestamp),
       datasets: [
         {
           label: 'Temperature',
-          data: data.map((d) => d.temperature),
+          data: inTS.map((d) => d.value),
           borderWidth: 2,
           tension: 0.25,
         },
@@ -267,7 +264,7 @@ function fetchTS(inUUID: string) {
     .then((data) => {
       console.log('We have some data');
       console.log(data);
-      renderTS();
+      renderTS(data);
     });
 }
 //
@@ -298,7 +295,10 @@ function fetchStation(inUUID: string) {
     });
 }
 
-function renderStations(inStations, inHeader): void {
+function renderStations(
+  inStations: GaugeStationRow[],
+  inHeader: GaugeStationHeaderSelection,
+): void {
   const sect = document.getElementById('stationList');
 
   // remove old wrapper/table if present
@@ -325,9 +325,7 @@ function renderStations(inStations, inHeader): void {
   tab.appendChild(tabCaption);
 
   // table header
-  const dataTableHeader: string[] = Object.keys(inHeader).map((element) =>
-    element.toUpperCase(),
-  );
+  const dataTableHeader = Object.keys(inHeader) as GaugeStationHeaderKeys[];
 
   const tabHeader = document.createElement('thead');
 
@@ -336,16 +334,16 @@ function renderStations(inStations, inHeader): void {
 
   for (const thisCol of dataTableHeader) {
     const tableHeaderCell = document.createElement('th');
-    tableHeaderCell.innerText = String(thisCol);
+    tableHeaderCell.innerText = thisCol.toUpperCase();
 
     tableHeaderCell.classList.add('tableHeaderRowElement');
 
-    tableHeaderCell.setAttribute('id', `${thisCol}`);
+    tableHeaderCell.setAttribute('id', thisCol.toUpperCase());
     tableHeaderCell.setAttribute('scope', 'col');
     tableHeaderCell.setAttribute('tabindex', '0');
 
     tableHeaderCell.addEventListener('click', () => {
-      sortTable(inStations, `${thisCol}`, true);
+      sortTable(inStations, thisCol);
     });
 
     tableHeaderRow.appendChild(tableHeaderCell);
@@ -359,18 +357,18 @@ function renderStations(inStations, inHeader): void {
 
   for (const station of inStations) {
     const row = document.createElement('tr');
-    const stationUUID: string = station['uuid'];
+    const stationUUID = String(station.uuid ?? '');
 
     row.classList.add('stationRow');
     row.setAttribute('id', stationUUID);
     row.setAttribute('tabindex', '0');
 
     row.addEventListener('dblclick', () => {
-      fetchStation(station['uuid']);
+      fetchStation(stationUUID);
     });
 
-    for (const fact in station) {
-      if (Object.keys(inHeader).includes(fact)) {
+    for (const fact of Object.keys(station) as GaugeStationHeaderKeys[]) {
+      if (fact in inHeader) {
         const thisTd = document.createElement('td');
         thisTd.innerText = String(station[fact]);
         thisTd.classList.add('stationRowElement');
@@ -384,7 +382,10 @@ function renderStations(inStations, inHeader): void {
   tab.appendChild(tabBody);
 }
 
-function sortTable(inStations, inKey: string, inUp: boolean = true): void {
+function sortTable(
+  inStations: GaugeStationRow[],
+  inKey: GaugeStationHeaderKeys,
+): void {
   // for debugging reasons only
   // console.log(`I would like to sort efter ${inKey}.`);
   // console.log(
@@ -405,26 +406,20 @@ function sortTable(inStations, inKey: string, inUp: boolean = true): void {
 
   let viewList = inStations;
 
-  if (isNaN(Number(inStations[0][inKey.toLowerCase()]))) {
+  if (isNaN(Number(inStations[0][inKey]))) {
     if (sortUp) {
       viewList = inStations.sort((a, b) =>
-        String(a[inKey.toLowerCase()]).localeCompare(b[inKey.toLowerCase()]),
+        String(a[inKey]).localeCompare(String(b[inKey])),
       );
     } else {
       viewList = inStations.sort((a, b) =>
-        String(b[inKey.toLowerCase()]).localeCompare(a[inKey.toLowerCase()]),
+        String(b[inKey]).localeCompare(String(a[inKey])),
       );
     }
   } else {
-    viewList = inStations.sort((a?, b?) => {
-      const aRank =
-        a[inKey.toLowerCase()] === undefined
-          ? Infinity
-          : a[inKey.toLocaleLowerCase()];
-      const bRank =
-        b[inKey.toLowerCase()] === undefined
-          ? Infinity
-          : b[inKey.toLocaleLowerCase()];
+    viewList = inStations.sort((a, b) => {
+      const aRank = a[inKey] === undefined ? Infinity : a[inKey];
+      const bRank = b[inKey] === undefined ? Infinity : b[inKey];
       if (sortUp) {
         return Number(aRank) - Number(bRank);
       } else {
@@ -446,8 +441,10 @@ fetch(gaugeStationsURLts)
     return response.json();
   })
   .then((data) => {
-    const mappedStations = data.map((s) => mapObject(s, gaugeStationHeaderMap));
-    currentStation = mappedStations[0].uuid;
+    const mappedStations = data.map((s: Record<string, unknown>) =>
+      mapObject(s, gaugeStationHeaderMap),
+    ) as GaugeStationRow[];
+    currentStation = String(mappedStations[0].uuid ?? '');
     renderStations(mappedStations, factsToRender);
     // renderDrawer03({ longitude: 10.17055, latitude: 53.17903 }, 5);
     MapModule.render({ longitude: 10.17055, latitude: 53.17903 }, 5, false);
@@ -466,8 +463,8 @@ fetch(gaugeStationsURLts)
   });
 
 function keywordSearch(
-  inStations: GaugeStationHeaderMap,
-  factsToRender: GaugeStationHeaderMap,
+  inStations: GaugeStationRow[],
+  factsToRender: GaugeStationHeaderSelection,
 ): void {
   let searchField = document.getElementById('searchTerm') as HTMLInputElement;
 
@@ -476,11 +473,19 @@ function keywordSearch(
   const term = searchTerm.toLowerCase();
 
   const filteredStations = inStations.filter(
-    (station: GaugeStationHeaderMap) =>
-      (station.num ?? '').toLowerCase().includes(term) ||
-      (station.name ?? '').toLowerCase().includes(term) ||
-      (station.waterlongname ?? '').toLowerCase().includes(term) ||
-      (station.water ?? '').toLowerCase().includes(term),
+    (station: GaugeStationRow) =>
+      String(station.num ?? '')
+        .toLowerCase()
+        .includes(term) ||
+      String(station.name ?? '')
+        .toLowerCase()
+        .includes(term) ||
+      String(station.waterlongname ?? '')
+        .toLowerCase()
+        .includes(term) ||
+      String(station.water ?? '')
+        .toLowerCase()
+        .includes(term),
   );
   renderStations(filteredStations, factsToRender);
 }
