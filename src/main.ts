@@ -40,9 +40,6 @@ let currentStation: string = '';
 let sortCol: string = '';
 let sortDirUp: boolean = false;
 
-// let map = '';
-// let marker = '';
-
 //consts and variables
 
 type CurrentMeasurement = {
