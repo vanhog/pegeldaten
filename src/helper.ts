@@ -1,3 +1,4 @@
+// helper functions suggested by chatGPT
 function getNestedValue(obj: Object, path: String) {
   return path.split('.').reduce((acc, key) => acc?.[key], obj);
 }
@@ -12,4 +13,15 @@ function mapObject(source: Object, mapper: Object) {
   return target;
 }
 
-export { getNestedValue, mapObject };
+// helper function suggested by codex
+function getElementOrThrow<T extends HTMLElement>(id: string): T {
+  const element = document.getElementById(id);
+
+  if (!element) {
+    throw new Error(`Element #${id} not found`);
+  }
+
+  return element as T;
+}
+
+export { getNestedValue, mapObject, getElementOrThrow };

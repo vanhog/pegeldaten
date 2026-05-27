@@ -1,5 +1,10 @@
-import { getNestedValue, mapObject } from './helper.ts';
+import { getNestedValue, mapObject, getElementOrThrow } from './helper.ts';
 import { Temporal } from '@js-temporal/polyfill';
+
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+import Chart from 'chart.js/auto';
 
 //settings
 const restStations: string =
@@ -20,7 +25,7 @@ const searchTermWasserstand: string = 'WASSERSTAND';
 const timeZoneClassifier: string = 'Europe/Copenhagen';
 const timeLocaleClassifier: string = 'de-DE';
 
-const factsToRender: GaugeStationHeaderMap = {
+const factsToRender: Partial<GaugeStationHeaderMap> = {
   num: 'number',
   name: 'shortname',
   waterlongname: 'water-longname',
@@ -39,6 +44,37 @@ let sortDirUp: boolean = false;
 // let marker = '';
 
 //consts and variables
+
+type CurrentMeasurement = {
+  timestamp: string;
+  value: number;
+};
+
+type TimeSeries = {
+  longname: string;
+  unit: string;
+  currentMeasurement: CurrentMeasurement;
+};
+
+type StationDetails = {
+  shortname: string;
+  longname: string;
+  number: string;
+  agency: string;
+  latitude: number;
+  longitude: number;
+  water: {
+    shortname: string;
+    longname: string;
+  };
+  timeseries?: TimeSeries[];
+};
+
+type Coordinates = {
+  latitude: number;
+  longitude: number;
+};
+
 type GaugeStationHeaderKeys =
   | 'num'
   | 'name'
@@ -79,51 +115,46 @@ function formatDateThenTime(
   return `${timeFmt.format(ms)} - ${dateFmt.format(ms)}`;
 }
 
-function renderDrawer01(data: unknown) {
-  document.getElementById('station-title-admin-shortname').innerText =
-    data['shortname'];
-  document.getElementById('station-title-admin-longname').innerText =
-    data['longname'];
-  document.getElementById('station-title-admin-water').innerText =
-    data['water'].shortname;
-  document.getElementById('station-title-admin-number').innerText =
-    data['number'];
-  document.getElementById('station-title-admin-agency').innerText =
-    data['agency'];
+function renderDrawer01(data: StationDetails): void {
+  getElementOrThrow('station-title-admin-shortname').innerText = data.shortname;
+  getElementOrThrow('station-title-admin-longname').innerText = data.longname;
+  getElementOrThrow('station-title-admin-water').innerText =
+    data.water.shortname;
+  getElementOrThrow('station-title-admin-number').innerText = data.number;
+  getElementOrThrow('station-title-admin-agency').innerText = data.agency;
 }
 
-function renderDrawer02(data: unknown) {
-  let ts: string[] = [];
+function renderDrawer02(data: StationDetails): void {
   let tStamp: Temporal.Instant;
 
   console.log(data);
   //remove obsolete values and units
-  document.getElementById('current-measurement-value').innerText = '---';
-  document.getElementById('current-measurement-unit').innerText = '';
-  document.getElementById('cmv-timestamp').innerText = 'Time/Date';
+  getElementOrThrow('current-measurement-value').innerText = '---';
+  getElementOrThrow('current-measurement-unit').innerText = '';
+  getElementOrThrow('cmv-timestamp').innerText = 'Time/Date';
 
-  if (data['timeseries']) {
-    let searchTerm: string = searchTermWasserstand;
-
-    for (let elem of data['timeseries']) {
-      ts.push(elem.longname);
-    }
-    const waterTS = data['timeseries'].filter((a) =>
-      a.longname.toUpperCase().includes(searchTerm),
+  if (data.timeseries) {
+    const waterMeasurement = data.timeseries?.filter((timeseries) =>
+      timeseries.longname.toUpperCase().includes(searchTermWasserstand),
     );
 
-    if (waterTS.length > 0) {
+    if (!waterMeasurement || waterMeasurement.length === 0) return;
+
+    if (waterMeasurement.length > 0) {
       // store as UTC for later use
-      tStamp = Temporal.Instant.from(waterTS[0].currentMeasurement.timestamp);
+      tStamp = Temporal.Instant.from(
+        waterMeasurement[0].currentMeasurement.timestamp,
+      );
 
       //document.getElementById('current-measurement-title').innerText =
       //searchTerm;
-      document.getElementById('current-measurement-value').innerText =
-        waterTS[0].currentMeasurement.value;
-      document.getElementById('current-measurement-unit').innerText =
-        waterTS[0].unit;
+      getElementOrThrow('current-measurement-value').innerText = String(
+        waterMeasurement[0].currentMeasurement.value,
+      );
+      getElementOrThrow('current-measurement-unit').innerText =
+        waterMeasurement[0].unit;
 
-      document.getElementById('cmv-timestamp').innerText = formatDateThenTime(
+      getElementOrThrow('cmv-timestamp').innerText = formatDateThenTime(
         tStamp.toZonedDateTimeISO(timeZoneClassifier),
       );
     }
@@ -133,7 +164,7 @@ function renderDrawer02(data: unknown) {
 /**
  * Render or update the map (using OpenStreetMap)
  * ------------------------
- * @param {Object} data - Data object containing at least:
+ * @param {Coordinates} data - Data object containing at least:
  *   - latitude
  *   - longitude
  * @param {number} [iniZoom=13] - Initial zoom level for the map view
@@ -146,14 +177,14 @@ function renderDrawer02(data: unknown) {
  */
 
 const MapModule = (() => {
-  let map = null;
-  let marker = null;
+  let map: L.Map | null = null;
+  let marker: L.Marker | null = null;
 
   function render(
-    data: Object,
+    data: Coordinates,
     iniZoom: number = 13,
     showMarker: boolean = true,
-  ) {
+  ): void {
     const lat = Number(data.latitude);
     const lon = Number(data.longitude);
 
@@ -257,10 +288,9 @@ function fetchStation(inUUID: string) {
   currentStation = inUUID;
   fetch(fetchURL)
     .then((response) => {
-      if (!response.ok)
-        return console.log('Gauge station could not be loaded!');
+      if (!response.ok) throw new Error('Gauge station could not be loaded!');
 
-      return response.json();
+      return response.json() as Promise<StationDetails>;
     })
     .then((data) => {
       renderDrawer01(data);
