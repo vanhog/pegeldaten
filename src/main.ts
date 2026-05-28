@@ -6,6 +6,9 @@ import 'leaflet/dist/leaflet.css';
 
 import Chart from 'chart.js/auto';
 
+// API endpoints and app-specific constants
+// - REST URLs for station data
+// - search term filter and localization settings
 //settings
 const restStations: string =
   'https://pegelonline.wsv.de/webservices/rest-api/v2/stations/';
@@ -31,14 +34,16 @@ const factsToRender: GaugeStationHeaderSelection = {
   lon: 'longitude',
 };
 
-//state
+// application state
+// tracks the current selected station and sort direction for the table
 let currentStation: string = '';
 
 let sortCol: string = '';
 let sortDirUp: boolean = false;
 
-//consts and variables
-
+// application data types
+// TimedMeasurement is used for chart data points and current measurement values
+// with a timestamp and numeric reading.
 type TimedMeasurement = {
   timestamp: string;
   value: number;
@@ -111,6 +116,7 @@ function formatDateThenTime(
   return `${timeFmt.format(ms)} - ${dateFmt.format(ms)}`;
 }
 
+// Drawer 1: render station metadata into the detail panel
 function renderDrawer01(data: StationDetails): void {
   getElementOrThrow('station-title-admin-shortname').innerText = data.shortname;
   getElementOrThrow('station-title-admin-longname').innerText = data.longname;
@@ -120,11 +126,12 @@ function renderDrawer01(data: StationDetails): void {
   getElementOrThrow('station-title-admin-agency').innerText = data.agency;
 }
 
+// Drawer 2: render the latest water measurement and timestamp
 function renderDrawer02(data: StationDetails): void {
   let tStamp: Temporal.Instant;
 
-  console.log(data);
-  //remove obsolete values and units
+  // console.log(data);
+  // remove obsolete values and units
   getElementOrThrow('current-measurement-value').innerText = '---';
   getElementOrThrow('current-measurement-unit').innerText = '';
   getElementOrThrow('cmv-timestamp').innerText = 'Time/Date';
@@ -172,6 +179,7 @@ function renderDrawer02(data: StationDetails): void {
  * - Marker is created once and then repositioned
  */
 
+// MapModule: lazy-init Leaflet map and update its state on repeated calls
 const MapModule = (() => {
   let map: L.Map | null = null;
   let marker: L.Marker | null = null;
@@ -210,8 +218,10 @@ const MapModule = (() => {
   return { render };
 })();
 
+// renderTS: create or refresh the line chart for timeseries data
 function renderTS(inTS: TimedMeasurement[]) {
   const ctx = getElementOrThrow('chart-container') as HTMLCanvasElement;
+  const unit: string = getElementOrThrow('current-measurement-unit').innerText;
 
   const existingChart = Chart.getChart(ctx);
   if (existingChart) {
@@ -224,10 +234,11 @@ function renderTS(inTS: TimedMeasurement[]) {
       labels: inTS.map((d) => d.timestamp),
       datasets: [
         {
-          label: 'Temperature',
+          label: 'Water level',
           data: inTS.map((d) => d.value),
-          borderWidth: 2,
+          borderWidth: 3,
           tension: 0.25,
+          pointRadius: 0,
         },
       ],
     },
@@ -236,24 +247,53 @@ function renderTS(inTS: TimedMeasurement[]) {
       maintainAspectRatio: false,
       scales: {
         x: {
+          grid: {
+            display: true,
+            color: 'rgba(250,250,250,0.08)',
+            lineWidth: 1,
+          },
+          border: {
+            display: true,
+            width: 1,
+            color: 'rgba(250,250,250,0.08)',
+          },
           title: {
             display: true,
             text: 'Date',
+          },
+          ticks: {
+            // Include a dollar sign in the ticks
+            callback: function (value, index, ticks) {
+              return index % 3 === 0
+                ? this.getLabelForValue(index).slice(0, 10)
+                : '';
+            },
           },
         },
         y: {
           title: {
             display: true,
-            text: 'Temperature [°C]',
+            text: 'Water level [' + unit + ']',
+          },
+          grid: {
+            display: true,
+            color: 'rgba(250,250,250,0.08)',
+            lineWidth: 1,
+          },
+          border: {
+            display: true,
+            width: 1,
+            color: 'rgba(250,250,250,0.08)',
           },
         },
       },
     },
   });
 }
+// Fetch the most recent timeseries measurements for one station.
 function fetchTS(inUUID: string) {
   const fetchURL = restStations + inUUID + fetchTSAisleTSM;
-  console.log(fetchURL);
+  //console.log(fetchURL);
   fetch(fetchURL)
     .then((response) => {
       if (!response.ok)
@@ -262,12 +302,15 @@ function fetchTS(inUUID: string) {
       return response.json();
     })
     .then((data) => {
-      console.log('We have some data');
-      console.log(data);
+      // for debugging reasons only
+      // console.log('We have some data');
+      // console.log(data);
+      // console.log(data.length);
       renderTS(data);
     });
 }
 //
+// Load station details for a clicked table row, update selection, and refresh drawers.
 function fetchStation(inUUID: string) {
   const fetchURL = restStations + inUUID + fetchStationAisleTSM;
 
@@ -278,7 +321,7 @@ function fetchStation(inUUID: string) {
       ?.classList.remove('stationRowSelected');
   }
 
-  document.getElementById(inUUID)?.classList.add('stationRowSelected');
+  getElementOrThrow(inUUID).classList.add('stationRowSelected');
   currentStation = inUUID;
   fetch(fetchURL)
     .then((response) => {
@@ -288,6 +331,7 @@ function fetchStation(inUUID: string) {
     })
     .then((data) => {
       renderDrawer01(data);
+      console.log(data);
       renderDrawer02(data);
       //TODO: MapModule only, when Lat/Lon supplied
       MapModule.render(data, 13);
@@ -295,6 +339,7 @@ function fetchStation(inUUID: string) {
     });
 }
 
+// Build the station list table from the current station data and header selection.
 function renderStations(
   inStations: GaugeStationRow[],
   inHeader: GaugeStationHeaderSelection,
@@ -382,6 +427,7 @@ function renderStations(
   tab.appendChild(tabBody);
 }
 
+// Sort the station list by a selected column and re-render the table.
 function sortTable(
   inStations: GaugeStationRow[],
   inKey: GaugeStationHeaderKeys,
@@ -433,7 +479,7 @@ function sortTable(
   renderStations(viewList, factsToRender);
 }
 
-// first of all: get the stations
+// App bootstrap: fetch the station list, render the table, and initialize the map.
 fetch(gaugeStationsURLts)
   .then((response) => {
     if (!response.ok) return console.log('Gauge stations could not be loaded!');
@@ -449,7 +495,7 @@ fetch(gaugeStationsURLts)
     // renderDrawer03({ longitude: 10.17055, latitude: 53.17903 }, 5);
     MapModule.render({ longitude: 10.17055, latitude: 53.17903 }, 5, false);
 
-    console.log(factsToRender);
+    //console.log(factsToRender);
     document
       .getElementById('searchButton')
       ?.addEventListener('click', () =>
@@ -462,6 +508,7 @@ fetch(gaugeStationsURLts)
     });
   });
 
+// Filter station rows based on search input and update the rendered list.
 function keywordSearch(
   inStations: GaugeStationRow[],
   factsToRender: GaugeStationHeaderSelection,

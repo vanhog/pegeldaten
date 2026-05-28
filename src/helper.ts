@@ -1,6 +1,9 @@
-// helper functions suggested by chatGPT
+// Utility helpers for object mapping and safe DOM access.
+// These functions are used by main.ts to normalize API payloads and
+// to ensure required DOM elements exist before use.
 type SourceObject = Record<string, unknown>;
 
+// Resolve a dot-separated path into a nested object value. (ChatGPT)
 function getNestedValue(obj: SourceObject, path: string): unknown {
   return path.split('.').reduce<unknown>((acc, key) => {
     if (!acc || typeof acc !== 'object') return undefined;
@@ -9,6 +12,7 @@ function getNestedValue(obj: SourceObject, path: string): unknown {
   }, obj);
 }
 
+// Map values from a source object into a new record using path mappings.
 function mapObject(
   source: SourceObject,
   mapper: Record<string, string>,
@@ -22,7 +26,7 @@ function mapObject(
   return target;
 }
 
-// helper function suggested by codex
+// Select a DOM element by ID and throw an error if it does not exist. (Codex)
 function getElementOrThrow<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
 
