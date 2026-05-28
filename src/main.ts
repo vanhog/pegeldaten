@@ -263,7 +263,7 @@ function renderTS(inTS: TimedMeasurement[]) {
           },
           ticks: {
             // Include a dollar sign in the ticks
-            callback: function (value, index, ticks) {
+            callback: function (_value, index, _ticks) {
               return index % 3 === 0
                 ? this.getLabelForValue(index).slice(0, 10)
                 : '';
