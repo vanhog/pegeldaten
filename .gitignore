@@ -33,5 +33,6 @@ Hydrological*
 .cre*
 proto*
 *.png~
+*.kra
 
 dist_old/

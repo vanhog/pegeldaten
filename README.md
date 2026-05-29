@@ -2,7 +2,7 @@
 
 **For training use only. Do not use in production. No warranty.**
 
-This is a free-style training project created as part of the OpenCampus Web Development Program 2025.
+This repository is a frontend training project created as part of the OpenCampus Web Development Program.
 
 ## Table of contents
 
@@ -10,36 +10,26 @@ This is a free-style training project created as part of the OpenCampus Web Deve
   - [The challenge](#the-challenge)
   - [Screenshot](#screenshot)
   - [Links](#links)
-- [My process](#my-process)
-  - [Built with](#built-with)
-  - [Architecture](#architecture)
-  - [What I learned](#what-i-learned)
-  - [Continued development](#continued-development)
-  - [Useful resources](#useful-resources)
+- [Screenshot](#screenshot)
+- [Features](#features)
+- [Getting started](#getting-started)
+- [Built with](#built-with)
+- [Architecture & notes](#architecture--notes)
+- [Useful resources](#useful-resources)
 - [Author](#author)
 
 ## Overview
 
-### The challenge
+This is a single-page frontend application that lists hydrological gauge stations (Pegel) and provides quick access to station metadata, current measurements, a small timeseries chart and an embedded map view.
 
-The application should be able to:
+### What the app does
 
-- Fetch station data from the Pegelonline REST API
-- Display the data in an interactive table:
-  - Sort ascending/descending by clicking on column headers
-  - Scroll through the list of stations
-  - Keep the table header sticky while scrolling
-- Open a detail view (drawer) on double-clicking a table row
-- Display:
-  - General station information in one drawer
-  - Current measurements in a second drawer
-- Reserve a third drawer for future map integration
-- Provide search functionality across:
-  - short name
-    - long name
-    - water short name
-    - water long name
-    - station number
+- Fetches station and timeseries data from the Pegelonline REST API
+- Renders an interactive, sortable table with a sticky header
+- Supports searching/filtering by station number, short name, and river name
+- Opens detail drawers on row double-click to show metadata and current measurements
+- Displays a Chart.js timeseries plot for recent measurements
+- Shows a Leaflet map in the Location drawer (map is initialized and updated)
 
 ### Screenshot
 
@@ -50,42 +40,45 @@ The application should be able to:
 - Solution URL: https://github.com/vanhog/pegeldaten
 - Live Site URL: https://vanhogs-pegeldaten.netlify.app/
 
-## My process
+## Features
 
-### Built with
+- Interactive, sortable station table (click column headers)
+- Sticky table header while scrolling
+- Double-click to open station details
+- Current measurement display and timestamp
+- Timeseries chart (Chart.js) for selected station
+- Leaflet map showing station coordinates
 
-- Semantic HTML5
-- Tailwind CSS
-- CSS custom properties
-- Flexbox & CSS Grid
-- Mobile-first workflow
+## Getting started
+
+Prerequisites: Node.js and npm installed.
+
+Install and run locally:
+
+```bash
+npm install
+npm run dev      # start Vite dev server
+npm run build    # runs `tsc && vite build` to build production bundle
+npm run preview  # preview production build
+```
+
+Open the app at the URL printed by the Vite dev server (usually http://localhost:5173).
+
+## Built with
+
 - TypeScript
+- Vite
+- Tailwind CSS (with @tailwindcss/vite)
+- Chart.js
+- Leaflet (map)
+- @js-temporal/polyfill (date/time handling)
 
-### Architecture
+## Architecture & notes
 
-- Frontend-only application (no backend yet)
-- Data fetched directly from external REST API (Pegelonline)
-- State handled in the browser using TypeScript
-- Modular rendering approach (table + drawers)
-
-## What I learned
-
-- Fetching and handling data from a REST API
-- Implementing a sticky table header
-- Dynamically rendering table data with TypeScript
-- Transforming and mapping API data structures
-- Structuring UI components (table, drawers, state handling)
-- Using AI tools to support development (e.g. object mapping)
-
-## Continued development
-
-Next steps:
-
-- Integrate an interactive map to display station locations
-- Improve performance for large datasets
-- Add filtering and advanced search capabilities
-- Enhance accessibility (ARIA roles, keyboard navigation)
-- Introduce a backend (Node.js + PostGIS) for persistence and scaling
+- Frontend-only SPA. Data is fetched directly from the Pegelonline REST API.
+- UI is modular: table renderer, two detail drawers (metadata + current measurement), chart, and map module.
+- The project uses strict TypeScript settings (see `tsconfig.json`). The `build` script runs `tsc` before `vite build`.
+- `package.json` contains `pg` and `@types/pg` — these are currently present but no backend is included; they indicate potential future backend/PostGIS work.
 
 ## Useful resources
 
