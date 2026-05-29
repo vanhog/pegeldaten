@@ -7,7 +7,7 @@ This repository is a frontend training project created as part of the OpenCampus
 ## Table of contents
 
 - [Overview](#overview)
-  - [The challenge](#the-challenge)
+  - [What the app does](#what-the-app-does)
   - [Screenshot](#screenshot)
   - [Links](#links)
 - [Screenshot](#screenshot)
