@@ -34,5 +34,6 @@ Hydrological*
 proto*
 *.png~
 *.kra
+index_graphtest*
 
 dist_old/
